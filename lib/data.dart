@@ -14,7 +14,6 @@ class Foto {
 
   final Size size;
 
-
   Foto.from(Map<String, dynamic> img, Map<String, dynamic> user, Map<String, dynamic> urls) :
     id = img['id'],
     color = img['color'],
@@ -22,6 +21,12 @@ class Foto {
     description = img['description'],
     size = Size((img['width'] as num).toDouble(), (img['height'] as num).toDouble()),
     url = urls['raw'];
+
+  @override
+  bool operator ==(Object other) => other is Foto && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
 
   String prepareUrlFor(Size size, Window window) {
     final prepared = '$url&w=${size.width}&dpr=${window.devicePixelRatio}';
