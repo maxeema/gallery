@@ -37,6 +37,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
   _getData({more=false}) async {
     if (isLoading)
       return;
+
+    Scaffold.of(context).removeCurrentSnackBar();
+
     print('_GalleryScreenState._getData, $status');
     setState(() {
       status = NetApiStatus.loading;
