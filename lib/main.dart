@@ -3,13 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'gallery_screen.dart';
+import 'injection.dart';
 import 'localization.dart';
+import 'network.dart' as net;
 
 ///
 /// App entry point
 ///
-
-main() => runApp(App());
+main() {
+  // register dependencies
+  injector.registerSingle<net.Api>(() => net.FakeApi('aa'));
+  // and go
+  runApp(App());
+}
 
 class App extends StatelessWidget {
 
@@ -18,21 +24,20 @@ class App extends StatelessWidget {
     MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: GalleryScreen()
+          body: GalleryScreen()
       ),
-      //localization
-      onGenerateTitle: (BuildContext context) => AppLocalizations.of(context).title,
+      //
+      onGenerateTitle: (BuildContext context) =>
+        AppLocalizations.of(context).title,
       localizationsDelegates: [
         AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: [ Locale('en'),],
+      //
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        primaryColor: Colors.blue.shade700,
-        backgroundColor: Colors.blue.shade300,
-        accentColor: Colors.blue,
+        primarySwatch: Colors.pink,
       ),
     );
 
