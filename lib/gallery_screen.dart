@@ -1,4 +1,5 @@
 
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -20,31 +21,56 @@ class GalleryScreen extends StatefulWidget {
 
 class _GalleryScreenState extends State<GalleryScreen> {
 
+  ScrollController scrollController;
+
   Api api;
 
   NetApiStatus status;
   NetApiResult result;
 
+  final data = <Foto>[];
   int page = 1;
 
-  _getData() async {
-//    print('_GalleryScreenState._getData, $status');
+  bool get isLoading => status == NetApiStatus.loading;
+  bool get isError   => status == NetApiStatus.error;
+
+  _getData({more=false}) async {
+    if (isLoading)
+      return;
+    print('_GalleryScreenState._getData, $status');
     setState(() {
       status = NetApiStatus.loading;
     });
-    result = await api.getPhotos(page);
-    setState(() {
+
+    result = await api.getPhotos(more ? page+1 : page);
+
+    setState((){
       status = result.status;
     });
-  }
-  _updateData() {
-//    print('_GalleryScreenState.updateData, $status');
-    if (status == NetApiStatus.loading)
-      return;
-    setState(() {
-      status = NetApiStatus.loading;
-    });
-    _getData();
+
+    if (status == NetApiStatus.success) {
+      data.addAll(result.toWell.response.data);
+      if (more) {
+        page++;
+        print("scrollController, $scrollController \n, ${scrollController.offset}");
+        final media = MediaQuery.of(context);
+        scrollController.animateTo(
+            scrollController.offset + media.size.height*.75,
+            duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+      }
+    }
+    if (isError && data.isNotEmpty)
+      Scaffold.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          content: Text(result.toBad.msg),
+          duration: Duration(seconds: 6),
+          behavior: SnackBarBehavior.floating,
+          action: SnackBarAction(label:'Retry', onPressed: () {
+            Scaffold.of(context).removeCurrentSnackBar();
+            _getData(more:true);
+          }),
+        ));
   }
 
   _open(Foto foto, String url) {
@@ -57,20 +83,40 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
   @override
+  void didUpdateWidget(GalleryScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+//    print('_GalleryScreenState.didUpdateWidget');
+  }
+
+  @override
+  void dispose() {
+//    print('_GalleryScreenState.dispose');
+    api.dispose();
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
 //    print('_GalleryScreenState.initState, $status, $result');
     if (api == null) {
       api = Api();
-      status = NetApiStatus.loading;
       _getData();
+    }
+    if (scrollController == null) {
+      scrollController = ScrollController()..addListener(() {
+//        print("scrollController, $scrollController \n, ${scrollController.offset}");
+        if (scrollController.position.pixels == scrollController.position.maxScrollExtent)
+          _getData(more:true);
+      });
     }
   }
 
   _createLoadingWidget() => Center(child: CircularProgressIndicator());
   
   _createErrorWidget() => GestureDetector(
-    onTap: _updateData,
+    onTap: _getData,
     child: Container(
       color: Colors.blue.shade200,
       child: Column(
@@ -148,36 +194,48 @@ class _GalleryScreenState extends State<GalleryScreen> {
     );
   }
 
-  _createGalleryListWidget() {
-    final fotos = result.toWell.response.data.toList();
-    final media = MediaQuery.of(context);
-    return ListView.builder(
-      itemCount: fotos.length,
-      itemBuilder: (context, index) {
-        final foto = fotos[index];
-        final width = media.size.width;
-        final size = Size(width, foto.size.height / (foto.size.width / width));
-        return SizedBox(
-          child: _createFotoTile(foto, size),
-          width: size.width,
-          height: size.height,
-        );
-      },
-    );
-  }
+//  _createGalleryListWidget() {
+//    final media = MediaQuery.of(context);
+//    return ListView.builder(
+//      itemCount: data.length,
+//      itemBuilder: (context, index) {
+//        final foto = data[index];
+//        final width = media.size.width;
+//        final size = Size(width, foto.size.height / (foto.size.width / width));
+//        return SizedBox(
+//          child: _createFotoTile(foto, size),
+//          width: size.width,
+//          height: size.height,
+//        );
+//      },
+//    );
+//  }
   _createGalleryStaggeredWidget() {
-    final fotos = result.toWell.response.data.toList();
     final media = MediaQuery.of(context);
-    final columns = MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 3;
+    final columns = max(2, media.size.width ~/ 200);
+    print(' use columns $columns, ${media.size}');
     final spacing = 4.0;
     return StaggeredGridView.countBuilder(
+      controller: scrollController,
       padding: EdgeInsets.all(spacing),
-      itemCount: fotos.length,
+      itemCount: data.length + (data.isNotEmpty ? 1 : 0),
       crossAxisCount: columns,
       mainAxisSpacing: spacing,
       crossAxisSpacing: spacing,
       itemBuilder: (context, index) {
-        final foto = fotos[index];
+        if (index == data.length && data.isNotEmpty) {
+            return Container(
+              padding: EdgeInsets.symmetric(vertical: 64),
+              alignment: Alignment.center,
+              child: isLoading
+                  ? CircularProgressIndicator()
+                  : FlatButton(
+                      child: Text('Show more'),
+                      onPressed: () => _getData(more:true),
+                    )
+            );
+        }
+        final foto = data[index];
         final width = (media.size.width - spacing*(columns+1)) / columns;
         final size = Size(width, foto.size.height / (foto.size.width / width));
         return _createFotoTile(foto, size);
@@ -186,23 +244,18 @@ class _GalleryScreenState extends State<GalleryScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-//    print('_GalleryScreenState.build, $status, $result');
+//    print('_GalleryScreenState.build, data size: ${data.length}, $status, $result');
 //    print('window: ${window.physicalSize.width/window.devicePixelRatio} x ${window.physicalSize.height/window.devicePixelRatio}');
 //    print('widget: ${MediaQuery.of(context)}');
     return Scaffold(
       body: (){
-        switch (status) {
-          case NetApiStatus.loading:
-            return _createLoadingWidget();
-          case NetApiStatus.error:
-            return _createErrorWidget();
-          default:
-            return _createGalleryStaggeredWidget();
-//            return _createGalleryListWidget();
-        }
+        if (isLoading && data.isEmpty)
+          return _createLoadingWidget();
+        if (isError && data.isEmpty)
+          return _createErrorWidget();
+        return _createGalleryStaggeredWidget();
       }(),
     );
   }
