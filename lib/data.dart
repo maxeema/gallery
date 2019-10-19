@@ -5,26 +5,26 @@ import 'package:flutter/material.dart';
 
 class Foto {
 
-  final Map<String, dynamic> _img;
-  final Map<String, dynamic> _user;
-  final Map<String, dynamic> _urls;
+  final String
+      id,
+      author,
+      description,
+      color, // in format #00ff00
+      url;   // raw
 
-  String get id => _img['id'];
-  String get color => _img['color'];
-  String get author => _user['name'];
-  String get description => _img['description'];
-  String get altDescription => _img['alt_description'];
-
-  Size get size => Size((_img['width'] as int).toDouble(), (_img['height'] as int).toDouble());
+  final Size size;
 
 
-  Foto.from(Map<String, dynamic> img, Map<String, dynamic> user, Map<String, dynamic> urls):
-    _img = img,
-    _user = user,
-    _urls = urls;
+  Foto.from(Map<String, dynamic> img, Map<String, dynamic> user, Map<String, dynamic> urls) :
+    id = img['id'],
+    color = img['color'],
+    author = user['name'],
+    description = img['description'],
+    size = Size((img['width'] as num).toDouble(), (img['height'] as num).toDouble()),
+    url = urls['raw'];
 
   String prepareUrlFor(Size size, Window window) {
-    final prepared = '${_urls['raw']}&w=${size.width}&dpr=${window.devicePixelRatio}';
+    final prepared = '$url&w=${size.width}&dpr=${window.devicePixelRatio}';
     print('foto prepared url: $prepared');
     return prepared;
   }
