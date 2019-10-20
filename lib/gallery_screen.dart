@@ -1,16 +1,19 @@
 
+import 'dart:collection';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:unsplash_gallery/ui.dart';
 
+import 'conf.dart' as conf;
 import 'data.dart';
 import 'foto_screen.dart';
-import 'network.dart';
+import 'injection.dart';
+import 'net/api.dart' as net;
 
 class GalleryScreen extends StatefulWidget {
 
@@ -19,62 +22,149 @@ class GalleryScreen extends StatefulWidget {
 
 }
 
-class _GalleryScreenState extends State<GalleryScreen> {
+const _autoLoadDataThresholdRowFromEnd = 3;
+
+class _GalleryScreenState extends State<GalleryScreen> with Injectable {
 
   ScrollController scrollController;
 
-  Api api;
+  net.Api api;
+  net.ApiStatus status;
+  net.ApiResult result;
 
-  NetApiStatus status;
-  NetApiResult result;
+  int page = 2;
+  var data = LinkedHashSet<Foto>();
+  int itemBuilderAutoLoadMoreIdx;
 
-  final data = <Foto>[];
-  int page = 1;
+  bool showNoMoreEvent = false,
+       isRefreshing    = false,
+       loadByUser      = false,
+       hasNoMore       = false;
 
-  bool get isLoading => status == NetApiStatus.loading;
-  bool get isError   => status == NetApiStatus.error;
+  bool get isError   => status == net.ApiStatus.error;
+  bool get isLoading => status == net.ApiStatus.loading;
+  bool get canRefresh => data.isNotEmpty && !isRefreshing;
+  BuildContext get ctx => context;
 
-  _getData({more=false}) async {
-    if (isLoading)
+  _getFresh() async {
+    print('\ncall _getFresh, refreshing: $isRefreshing');
+    if (isRefreshing)
       return;
 
-    Scaffold.of(context).removeCurrentSnackBar();
-
-    print('_GalleryScreenState._getData, $status');
-    setState(() {
-      status = NetApiStatus.loading;
+    setStateSafe(() {
+      isRefreshing = true;
     });
+
+    final result = await api.getPhotos(1);
+
+    setStateSafe((){
+      isRefreshing = false;
+    });
+
+    if (result.status == net.ApiStatus.error) {
+      snackbar(ctx, result.toBad.msg);
+      return;
+    }
+
+    final dataSizeBeforeRefresh = data.length;
+
+    if (!data.containsAll(result.toWell.response.data))
+      setState(() {
+        data = LinkedHashSet.of(result.toWell.response.data)..addAll(data);
+      });
+
+    final dataSizeAfterRefresh = data.length;
+
+    print('\non success, before refresh '
+        '\n data now size: $dataSizeBeforeRefresh'
+        '\n data response size: ${result.toWell.response.data.length}'
+        '\n data new size: $dataSizeAfterRefresh'
+    );
+
+    final addedDataAmount = dataSizeBeforeRefresh - dataSizeAfterRefresh;
+
+    if (addedDataAmount == 0)
+      snackbar(ctx, 'You see the latest photos');
+
+  }
+
+  _getData({more=false, byUser=false}) async {
+    print('\ncall _getData, more: $more, isLoading: $isLoading, hasNoMore: $hasNoMore status: $status');
+    if (byUser)
+      loadByUser = true;
+
+    if (isLoading || hasNoMore)
+      return;
+
+    setStateSafe(() {
+      status = net.ApiStatus.loading;
+    });
+
+    _getDataImpl(more);
+  }
+
+  _getDataImpl(bool more, [recursiveDataAddedAmount=0]) async {
+//    print('\ncall _getDataImpl, more: $more, recursiveDataAddedAmount: $recursiveDataAddedAmount');
 
     result = await api.getPhotos(more ? page+1 : page);
 
-    setState((){
+    if (result.status == net.ApiStatus.success) {
+      hasNoMore = result.toWell.noMore;
+      showNoMoreEvent = hasNoMore;
+
+      final dataSizeBeforeMerge = data.length;
+//      print('\non success, before merging to '
+//          '\n data now size: $dataSizeBeforeMerge'
+//          '\n data response size: ${result.toWell.response.data.length}'
+//      );
+
+      data.addAll(result.toWell.response.data);
+
+      final dataSizeAfterMerge = data.length;
+      print('data new size: $dataSizeAfterMerge');
+
+      if (more)
+        page++;
+
+      final addedDataAmount = dataSizeAfterMerge - dataSizeBeforeMerge;
+      recursiveDataAddedAmount += addedDataAmount;
+//      print('\n addedDataAmount $addedDataAmount'
+//          '\n recursiveDataAddedAmount $recursiveDataAddedAmount');
+
+      final media = MediaQuery.of(context);
+
+      if (addedDataAmount > 0) {
+        loadByUser = false;
+        invalidateState();
+        if (isAlmostAtTheEndOfTheScroll(media))
+          scrollController?.animateTo(scrollController.offset + media.size.height*.75,
+              duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+      }
+
+      if (!result.toWell.noMore && recursiveDataAddedAmount < conf.photosPerUiOperation) {
+        _getDataImpl(true, recursiveDataAddedAmount);
+        return;
+      }
+    }
+
+    setStateSafe((){
       status = result.status;
     });
 
-    if (status == NetApiStatus.success) {
-      data.addAll(result.toWell.response.data);
-      if (more) {
-        page++;
-        print("scrollController, $scrollController \n, ${scrollController.offset}");
-        final media = MediaQuery.of(context);
-        scrollController.animateTo(
-            scrollController.offset + media.size.height*.75,
-            duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-      }
-    }
-    if (isError && data.isNotEmpty)
-      Scaffold.of(context)
-        ..removeCurrentSnackBar()
-        ..showSnackBar(SnackBar(
-          content: Text(result.toBad.msg),
-          duration: Duration(seconds: 6),
-          behavior: SnackBarBehavior.floating,
-          action: SnackBarAction(label:'Retry', onPressed: () {
-            Scaffold.of(context).removeCurrentSnackBar();
-            _getData(more:true);
-          }),
-        ));
+    if (isError && data.isNotEmpty && loadByUser)
+      actionSnackbar(ctx, result.toBad.msg, 'Retry', () => _getData(more: true, byUser: true));
+
+    loadByUser = false;
   }
+
+  setStateSafe(action()) {
+    try { // possible place for an error when call setState() during build()
+      action();
+      setState((){});
+    } catch (e) { }
+  }
+
+  invalidateState() => setState((){});
 
   _open(Foto foto, String url) {
     Navigator.push(
@@ -86,34 +176,51 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
   @override
-  void didUpdateWidget(GalleryScreen oldWidget) {
+  didUpdateWidget(GalleryScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
 //    print('_GalleryScreenState.didUpdateWidget');
   }
 
   @override
-  void dispose() {
-//    print('_GalleryScreenState.dispose');
-    api.dispose();
-    scrollController.dispose();
-    super.dispose();
+  initState() {
+    super.initState();
+//    print('_GalleryScreenState.initState');
+    api = inject();
+    _getData();
   }
 
   @override
-  void initState() {
-    super.initState();
-//    print('_GalleryScreenState.initState, $status, $result');
-    if (api == null) {
-      api = Api();
-      _getData();
+  dispose() {
+//    print('_GalleryScreenState.dispose');
+    api?.dispose();
+    scrollController?.dispose();
+    super.dispose();
+  }
+
+  bool isAlmostAtTheEndOfTheScroll(MediaQueryData media) => scrollController != null
+      && (scrollController.position.maxScrollExtent - scrollController.position.pixels) <= media.size.height / 3;
+
+  onScroll() {
+    print("scrollController, isAlmostAtTheEndOfTheScroll: ${isAlmostAtTheEndOfTheScroll(MediaQuery.of(context))},"
+        " scroll off: ${scrollController.offset}, scroll pos ext: ${scrollController.position.maxScrollExtent}");
+    if (scrollController.position.pixels != scrollController.position.maxScrollExtent)
+      return;
+    if (showNoMoreEvent) {
+      print("\nscrollController, showNoMoreEvent, unregister scroll listener");
+      showNoMoreEvent = false;
+      scrollController.removeListener(onScroll);
+      Scaffold.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+            content: Text('You have reached the end.'),
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          )
+        );
+      return;
     }
-    if (scrollController == null) {
-      scrollController = ScrollController()..addListener(() {
-//        print("scrollController, $scrollController \n, ${scrollController.offset}");
-        if (scrollController.position.pixels == scrollController.position.maxScrollExtent)
-          _getData(more:true);
-      });
-    }
+    if (!hasNoMore)
+      _getData(more: true, byUser: true);
   }
 
   _createLoadingWidget() => Center(child: CircularProgressIndicator());
@@ -150,7 +257,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
   );
 
   _createFotoTile(Foto foto, Size size) {
-    String url;
+    final url = foto.prepareUrlFor(size, window);
+    print(url);
     return Container(
       color: Color(int.tryParse('FF${foto.color.substring(1)}', radix: 16) ?? Colors.transparent),
       width: size.width,
@@ -161,12 +269,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
           Hero(
             tag: foto.id,
             child: FadeInImage.memoryNetwork(
-              image: url = foto.prepareUrlFor(size, window),
+              image: url,
               fit: BoxFit.cover,
               placeholder: kTransparentImage,
             ),
           ),
-          Align(
+          if (foto?.author?.trim()?.isNotEmpty ?? false) Align(
             alignment: AlignmentDirectional.bottomStart,
             child: Container(
               padding: EdgeInsets.all(4),
@@ -174,7 +282,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 color: Colors.black.withAlpha(0x99)
               ),
               child: Text(
-                foto.author ?? '',
+                foto.author,
                 style: Theme.of(context).textTheme.caption.apply(
                   color: Colors.white.withAlpha(0xbb),
                   fontFamily: 'NanumPenScript'
@@ -183,62 +291,56 @@ class _GalleryScreenState extends State<GalleryScreen> {
             )
           ),
           Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () => _open(foto, url),
-              child: () {
-                final description = foto.description ?? foto.altDescription;
-                return description == null ? null : Tooltip(message: description ?? '',);
-              }(),
-            )
-          )
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _open(foto, url),
+                child: () {
+                  final description = foto.description?.trim();
+                  return description == null ? null : Tooltip(message: description);
+                }(),
+              )
+          ),
         ]
       )
     );
   }
 
-//  _createGalleryListWidget() {
-//    final media = MediaQuery.of(context);
-//    return ListView.builder(
-//      itemCount: data.length,
-//      itemBuilder: (context, index) {
-//        final foto = data[index];
-//        final width = media.size.width;
-//        final size = Size(width, foto.size.height / (foto.size.width / width));
-//        return SizedBox(
-//          child: _createFotoTile(foto, size),
-//          width: size.width,
-//          height: size.height,
-//        );
-//      },
-//    );
-//  }
   _createGalleryStaggeredWidget() {
     final media = MediaQuery.of(context);
     final columns = max(2, media.size.width ~/ 200);
-    print(' use columns $columns, ${media.size}');
     final spacing = 4.0;
+    final loadMoreIdx = data.length - _autoLoadDataThresholdRowFromEnd*columns;
     return StaggeredGridView.countBuilder(
-      controller: scrollController,
+      controller: scrollController ??= ScrollController()..addListener(onScroll),
       padding: EdgeInsets.all(spacing),
-      itemCount: data.length + (data.isNotEmpty ? 1 : 0),
+      itemCount: data.length + (hasNoMore ? 0 : 1),
       crossAxisCount: columns,
       mainAxisSpacing: spacing,
       crossAxisSpacing: spacing,
       itemBuilder: (context, index) {
-        if (index == data.length && data.isNotEmpty) {
-            return Container(
-              padding: EdgeInsets.symmetric(vertical: 64),
-              alignment: Alignment.center,
-              child: isLoading
-                  ? CircularProgressIndicator()
-                  : FlatButton(
-                      child: Text('Show more'),
-                      onPressed: () => _getData(more:true),
-                    )
-            );
+        if (index == loadMoreIdx && !hasNoMore && loadMoreIdx != itemBuilderAutoLoadMoreIdx) {
+          itemBuilderAutoLoadMoreIdx = loadMoreIdx;
+//          print('item builder: auto load more data on idx: $index of ${data.length},'
+//              ' columns: $columns, rows: ${data.length / columns}');
+          _getData(more: true);
         }
-        final foto = data[index];
+        if (index == data.length && !hasNoMore) {
+          return SizedBox(
+            width: double.infinity,
+            height: media.size.height / 4,
+              child: Align(
+                alignment: Alignment.center,
+                child: isLoading
+                  ? CircularProgressIndicator()
+                  : InkResponse(
+                      radius: 70,
+                      onTap: () => _getData(more: true, byUser: true),
+                      child: OutlineButton(child:Text('Get more', textAlign: TextAlign.center,), onPressed: null,)
+                    ),
+            ),
+          );
+        }
+        final foto = data.elementAt(index);
         final width = (media.size.width - spacing*(columns+1)) / columns;
         final size = Size(width, foto.size.height / (foto.size.width / width));
         return _createFotoTile(foto, size);
@@ -251,14 +353,18 @@ class _GalleryScreenState extends State<GalleryScreen> {
   Widget build(BuildContext context) {
 //    print('_GalleryScreenState.build, data size: ${data.length}, $status, $result');
 //    print('window: ${window.physicalSize.width/window.devicePixelRatio} x ${window.physicalSize.height/window.devicePixelRatio}');
-//    print('widget: ${MediaQuery.of(context)}');
     return Scaffold(
       body: (){
         if (isLoading && data.isEmpty)
           return _createLoadingWidget();
         if (isError && data.isEmpty)
           return _createErrorWidget();
-        return _createGalleryStaggeredWidget();
+        //
+        final gallery = _createGalleryStaggeredWidget();
+        return data.isNotEmpty && !isRefreshing ? RefreshIndicator(
+            child: gallery,
+            onRefresh: () => _getFresh(),
+        ) : gallery;
       }(),
     );
   }
