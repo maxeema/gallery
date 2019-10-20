@@ -28,11 +28,7 @@ class Foto {
   @override
   int get hashCode => id.hashCode;
 
-  String prepareUrlFor(Size size, Window window) {
-    final prepared = '$url&w=${size.width}&dpr=${window.devicePixelRatio}';
-    print('foto prepared url: $prepared');
-    return prepared;
-  }
+  String prepareUrlFor(Size size, Window window) => '$url&w=${size.width}&dpr=${window.devicePixelRatio}';
 
 //  static double extractWidth(String url) => double.tryParse(Uri.parse(url).queryParameters['w']) ?? -1.0;
 
