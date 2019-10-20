@@ -27,7 +27,8 @@ class FotoScreen extends StatelessWidget {
       scrollAxis = Axis.horizontal;
 //      print('updated size: $size');
     }
-    print("size $size");
+    final fullSizedUrl = foto.prepareUrlFor(size, window);
+    print('$fullSizedUrl \n for $size');
     return Scaffold(
       backgroundColor: Color(int.tryParse('FF${foto.color.substring(1)}', radix: 16) ?? Colors.transparent),
       body: Hero(
@@ -46,7 +47,7 @@ class FotoScreen extends StatelessWidget {
                 height: size.height,
               ),
               FadeInImage.memoryNetwork(
-                image: foto.prepareUrlFor(size, window),
+                image: fullSizedUrl,
                 placeholder: kTransparentImage,
                 fit: BoxFit.cover,
                 width: size.width,
