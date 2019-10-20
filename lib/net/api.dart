@@ -1,10 +1,12 @@
 library unsplash_gallery.net;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:unsplash_gallery/data.dart';
+
 export 'package:unsplash_gallery/data.dart';
 
 part 'fake_network.dart';
