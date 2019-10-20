@@ -26,9 +26,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) =>
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-          body: GalleryScreen()
-      ),
+      home: GalleryScreen(),
       //
       onGenerateTitle: (BuildContext context) =>
         AppLocalizations.of(context).title,

@@ -8,7 +8,7 @@ snackbar(BuildContext ctx, String msg) {
       SnackBar(
         content: Text(msg),
         duration: Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating
+        behavior: SnackBarBehavior.fixed
       )
     );
 }
@@ -20,7 +20,7 @@ actionSnackbar(BuildContext ctx, String msg, String actionLabel, action()) {
       SnackBar(
         content: Text(msg),
         duration: Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
+        behavior: SnackBarBehavior.fixed,
         action: SnackBarAction(label: actionLabel, onPressed: () {
           Scaffold.of(ctx).removeCurrentSnackBar();
           action();

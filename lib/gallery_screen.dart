@@ -15,16 +15,16 @@ import 'foto_screen.dart';
 import 'injection.dart';
 import 'net/api.dart' as net;
 
-class GalleryScreen extends StatefulWidget {
+class GalleryScreen extends Scaffold {
 
   @override
-  State<StatefulWidget> createState() => _GalleryScreenState();
+  _GalleryScreenState createState() => _GalleryScreenState();
 
 }
 
 const _autoLoadDataThresholdRowFromEnd = 3;
 
-class _GalleryScreenState extends State<GalleryScreen> with Injectable {
+class _GalleryScreenState extends ScaffoldState with Injectable {
 
   ScrollController scrollController;
 
@@ -35,6 +35,7 @@ class _GalleryScreenState extends State<GalleryScreen> with Injectable {
   int page = 2;
   var data = LinkedHashSet<Foto>();
   int itemBuilderAutoLoadMoreIdx;
+  var fabAnimationKey = ValueKey(true);
 
   bool showNoMoreEvent = false,
        isRefreshing    = false,
@@ -44,8 +45,10 @@ class _GalleryScreenState extends State<GalleryScreen> with Injectable {
   bool get isError   => status == net.ApiStatus.error;
   bool get isLoading => status == net.ApiStatus.loading;
   bool get canRefresh => data.isNotEmpty && !isRefreshing;
-  BuildContext get ctx => context;
 
+  BuildContext scaffoldCtx;
+
+//  BuildContext get ctx => context;
   _getFresh() async {
     print('\ncall _getFresh, refreshing: $isRefreshing');
     if (isRefreshing)
@@ -62,7 +65,7 @@ class _GalleryScreenState extends State<GalleryScreen> with Injectable {
     });
 
     if (result.status == net.ApiStatus.error) {
-      snackbar(ctx, result.toBad.msg);
+      snackbar(scaffoldCtx, result.toBad.msg);
       return;
     }
 
@@ -84,7 +87,7 @@ class _GalleryScreenState extends State<GalleryScreen> with Injectable {
     final addedDataAmount = dataSizeBeforeRefresh - dataSizeAfterRefresh;
 
     if (addedDataAmount == 0)
-      snackbar(ctx, 'You see the latest photos');
+      snackbar(scaffoldCtx, 'You see the latest photos');
 
   }
 
@@ -152,7 +155,7 @@ class _GalleryScreenState extends State<GalleryScreen> with Injectable {
     });
 
     if (isError && data.isNotEmpty && loadByUser)
-      actionSnackbar(ctx, result.toBad.msg, 'Retry', () => _getData(more: true, byUser: true));
+      actionSnackbar(scaffoldCtx, result.toBad.msg, 'Retry', () => _getData(more: true, byUser: true));
 
     loadByUser = false;
   }
@@ -205,20 +208,15 @@ class _GalleryScreenState extends State<GalleryScreen> with Injectable {
         " scroll off: ${scrollController.offset}, scroll pos ext: ${scrollController.position.maxScrollExtent}");
     if (scrollController.position.pixels != scrollController.position.maxScrollExtent)
       return;
+
     if (showNoMoreEvent) {
       print("\nscrollController, showNoMoreEvent, unregister scroll listener");
       showNoMoreEvent = false;
       scrollController.removeListener(onScroll);
-      Scaffold.of(context)
-        ..removeCurrentSnackBar()
-        ..showSnackBar(SnackBar(
-            content: Text('You have reached the end.'),
-            duration: Duration(seconds: 3),
-            behavior: SnackBarBehavior.floating,
-          )
-        );
+      snackbar(scaffoldCtx, 'You have reached the end.');
       return;
     }
+
     if (!hasNoMore)
       _getData(more: true, byUser: true);
   }
@@ -349,24 +347,53 @@ class _GalleryScreenState extends State<GalleryScreen> with Injectable {
     );
   }
 
+  _createShuffleFab() {
+    return FloatingActionButton(
+      onPressed: () {
+        fabAnimationKey = ValueKey(!fabAnimationKey.value);
+        shuffleData();
+      },
+      tooltip: "Shuffle all",
+      child: AnimatedSwitcher(
+        duration: Duration(milliseconds: 500),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return RotationTransition(child: child, turns: animation,);
+        },
+        child: Icon(
+          Icons.shuffle,
+          key: fabAnimationKey,
+        ),
+      )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
 //    print('_GalleryScreenState.build, data size: ${data.length}, $status, $result');
 //    print('window: ${window.physicalSize.width/window.devicePixelRatio} x ${window.physicalSize.height/window.devicePixelRatio}');
     return Scaffold(
-      body: (){
-        if (isLoading && data.isEmpty)
-          return _createLoadingWidget();
-        if (isError && data.isEmpty)
-          return _createErrorWidget();
-        //
-        final gallery = _createGalleryStaggeredWidget();
-        return data.isNotEmpty && !isRefreshing ? RefreshIndicator(
-            child: gallery,
-            onRefresh: () => _getFresh(),
-        ) : gallery;
-      }(),
+      floatingActionButton: data.isNotEmpty ? _createShuffleFab() : null,
+      body: Builder(
+        builder: (BuildContext context) {
+          scaffoldCtx = context;
+          if (isLoading && data.isEmpty)
+            return _createLoadingWidget();
+          if (isError && data.isEmpty)
+            return _createErrorWidget();
+          //
+          return RefreshIndicator(
+            onRefresh: ()=> _getFresh(),
+            child: Stack(
+            children: <Widget>[
+              _createGalleryStaggeredWidget(),
+            ],
+            )
+          );
+        },
+      ),
     );
   }
+
+  shuffleData() => setState(() { data = LinkedHashSet.of(data.toList()..shuffle(Random())); });
 
 }
