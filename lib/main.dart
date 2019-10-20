@@ -5,7 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'gallery_screen.dart';
 import 'injection.dart';
 import 'localization.dart';
-import 'network.dart' as net;
+import 'net/api.dart' as net;
 
 ///
 /// App entry point
