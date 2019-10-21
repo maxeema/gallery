@@ -238,7 +238,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             ),
             Divider(height: 2,),
             MaterialButton(
-              onPressed: _authorExpanded ? null : () => _expandAuthor,
+              onPressed: _authorExpanded ? null : _expandAuthor,
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: AnimatedCrossFade(
