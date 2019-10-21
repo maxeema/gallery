@@ -1,6 +1,9 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
+
+import 'ui.dart';
 
 bool isEmpty(String s)    => s?.trim()?.isEmpty    ?? true;
 bool isNotEmpty(String s) => s?.trim()?.isNotEmpty ?? false;
@@ -10,11 +13,14 @@ assetsSvgIcon(String name) => "assets/icons/${name.replaceAll(' ', '_').toLowerC
 twitterUrlByUser(String user) => 'https://twitter.com/$user';
 instragramUrlByUser(String user) => 'https://www.instagram.com/$user';
 
-launchUrl(String url)        => launcher.launch(url);
+launchUrl(String url) {
+  print(url);
+  launcher.launch(url);
+}
 launchTwitter(String user)   => launchUrl(twitterUrlByUser(user));
 launchInstagram(String user) => launchUrl(instragramUrlByUser(user));
 
-String makeUrlBeautiful(String url) {
+String beautifyUrl(String url) {
   final uri = Uri.parse(url);
   url = uri.hasScheme ? uri.toString().substring(uri.scheme.length + 3) : uri.toString();
   if (url.startsWith('www.'))
@@ -24,5 +30,10 @@ String makeUrlBeautiful(String url) {
   return url;
 }
 
-copyToClipboard(String text) => Clipboard.setData(ClipboardData(text: text));
+copyToClipboard(String text, {BuildContext ctx, String toastMsg}) {
+  Clipboard.setData(ClipboardData(text: text));
+  print('Copied to clipboard: $text');
+  if (toastMsg != null && ctx != null)
+    toast(ctx, toastMsg);
+}
 
