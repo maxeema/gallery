@@ -24,30 +24,32 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   Foto get foto => widget.foto;
 
-  var _authorExpanded = false;
+  var _isExpanded = false;
 
   _createFotoInfo() {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        InkWell(
+        InkResponse(
           onTap: () => launchUrl(foto.htmlUrl),
+          onLongPress: ()=> copyToClipboard(foto.htmlUrl, ctx: context, toastMsg: 'Copied!'),
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
-            child: Tooltip(child: Text(
-              makeUrlBeautiful(foto.htmlUrl),
+            child: Text(
+              beautifyUrl(foto.htmlUrl),
               style: theme.textTheme.body1.apply(
                   color: Colors.blue
               ),
-            ), message: "Url copied!"),
+            )
           )
         ),
         if (isNotEmpty(foto.description))
           Text(
             foto.description.trim(),
             textAlign: TextAlign.center,
-            maxLines: 5,
+            maxLines: _isExpanded ? 10 : 3,
+            overflow: TextOverflow.ellipsis,
             style: theme.textTheme.body1.apply(
               color: Colors.grey.shade500
             ),
@@ -55,21 +57,27 @@ class _DetailsScreenState extends State<DetailsScreen> {
       ],
     );
   }
+  _createAvatar({large = false}) {
+    final author = widget.foto.author;
+    final avatarUrl = author.prepareAvatarUrl(_avatarSize, window);
+    print(avatarUrl);
+    return InkResponse(
+      onTap:       isNotEmpty(author.unsplashUrl) ? () => launchUrl(author.unsplashUrl) : null,
+      onLongPress: isNotEmpty(author.unsplashUrl) ? () =>
+          copyToClipboard(author.unsplashUrl, ctx: context, toastMsg: 'Author page url copied!') : null,
+      child: CircleAvatar(
+        maxRadius: _avatarSize / (large ? 2 : 4),
+        backgroundImage: NetworkImage(avatarUrl),
+      ),
+    );
+  }
 
   _createAuthorTile() {
     final theme = Theme.of(context);
     final author = widget.foto.author;
-    final avatarUrl = author.prepareAvatarUrl(_avatarSize, window);
-    print(avatarUrl);
     return Row(
       children: <Widget>[
-        GestureDetector(
-          onTap: isNotEmpty(author.unsplashUrl) ? () => launchUrl(author.unsplashUrl) : null,
-          child: CircleAvatar(
-            maxRadius: _avatarSize / 4,
-            backgroundImage: NetworkImage(avatarUrl),
-          ),
-        ),
+        _createAvatar(large: false),
         SizedBox(width: 16,),
         Expanded(child: Padding(
           padding: EdgeInsets.symmetric(vertical: 4),
@@ -78,14 +86,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
             children: <Widget>[
               Text(author.name,
                 style: theme.textTheme.title,
-                maxLines: 2,
+                maxLines: _isExpanded ? 2 : 2,
                 overflow: TextOverflow.fade,
               ),
               SizedBox(height: 8,),
               Text('@${author.username}',
-                maxLines: 1,
+                maxLines: _isExpanded ? 2 : 1,
                 overflow: TextOverflow.fade,
-                style: Theme.of(context).textTheme.subtitle.apply(
+                style: Theme.of(context).textTheme.caption.apply(
                   color: Colors.grey,
                 ),
               )
@@ -107,26 +115,20 @@ class _DetailsScreenState extends State<DetailsScreen> {
           children: <Widget>[
             Align(
               alignment: AlignmentDirectional.center,
-              child: GestureDetector(
-                onTap: isNotEmpty(author.unsplashUrl) ? () => launchUrl(author.unsplashUrl) : null,
-                child: CircleAvatar(
-                  maxRadius: _avatarSize / 2,
-                  backgroundImage: NetworkImage(avatarUrl),
-                ),
-              ),
+              child: _createAvatar(large: true),
             ),
             if (isNotEmpty(author.twitterUsername))
               Align(
                 alignment: AlignmentDirectional.bottomStart,
                 child: InkResponse(
-                  onLongPress: ()=> copyToClipboard(author.twitterUsername),
                   onTap: () => launchTwitter(author.twitterUsername),
+                  onLongPress: ()=> copyToClipboard(author.twitterUsername, ctx: context, toastMsg: 'Author Twitter name copied!'),
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 4),
-                    child: Tooltip(child: SvgPicture.asset(
+                    child: SvgPicture.asset(
                       assetsSvgIcon('twitter'),
                       width: 32, color: Colors.blue.shade500,
-                    ), message: "Twitter name copied!"),
+                    ),
                   ),
                 ),
               ),
@@ -134,14 +136,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
               Align(
                 alignment: AlignmentDirectional.bottomEnd,
                 child: InkResponse(
-                  onLongPress: ()=> copyToClipboard(author.instagramUsername),
                   onTap: () => launchInstagram(author.instagramUsername),
+                  onLongPress: ()=> copyToClipboard(author.instagramUsername, ctx: context, toastMsg: 'Author Instagram name copied!'),
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 4),
-                    child: Tooltip(child: SvgPicture.asset(
+                    child: SvgPicture.asset(
                       assetsSvgIcon('instagram'),
                       width: 32, color: Colors.blue.shade500,
-                    ), message: "Instagram name copied!"),
+                    ),
                   ),
                 ),
               ),
@@ -152,7 +154,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           padding: EdgeInsets.only(top: 4),
           child: Text(author.name,
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: _isExpanded ? 3 : 2,
             overflow: TextOverflow.fade,
             style: theme.textTheme.title,
           ),
@@ -163,7 +165,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             padding: EdgeInsets.only(top: 4),
             child: RichText(
               textAlign: TextAlign.center,
-              maxLines: 1,
+              maxLines: _isExpanded ? 2 : 1,
               overflow: TextOverflow.fade,
               text: TextSpan(
                   style: Theme.of(context).textTheme.caption.apply(
@@ -185,27 +187,31 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ),
 
         if (isNotEmpty(author.portfolioUrl) || isNotEmpty(author.unsplashUrl))
-          InkWell(
-            onTap: () => launchUrl(isNotEmpty(author.portfolioUrl) ? author.portfolioUrl : author.unsplashUrl),
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-              child: Tooltip(child: Text(
-                makeUrlBeautiful(isNotEmpty(author.portfolioUrl) ? author.portfolioUrl : author.unsplashUrl),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.body1.apply(
-                    color: Colors.blue
-                ),
-              ), message: "Url copied!"),
-            )
-          ),
+          () {
+            final url = isNotEmpty(author.portfolioUrl) ? author.portfolioUrl : author.unsplashUrl;
+            return InkResponse(
+                onTap: () => launchUrl(url),
+                onLongPress: ()=> copyToClipboard(url, ctx: context, toastMsg: 'Copied!'),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  child: Text(
+                    beautifyUrl(url),
+                    maxLines: _isExpanded ? 2 : 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.body1.apply(
+                        color: Colors.blue
+                    ),
+                  ),
+                )
+            );
+          }(),
 
         if (isNotEmpty(author.bio))
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4),
             child: Text(
               author.bio.trim(),
-              maxLines: 5,
+              maxLines: 10,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: theme.textTheme.body1.apply(
@@ -217,9 +223,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
   }
 
-  _expandAuthor() {
-    if (!_authorExpanded )
-      setState(() { _authorExpanded = true; });
+  _expand() {
+    if (!_isExpanded )
+      setState(() { _isExpanded = true; });
   }
 
   @override
@@ -238,14 +244,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
             ),
             Divider(height: 2,),
             MaterialButton(
-              onPressed: _authorExpanded ? null : _expandAuthor,
+              onPressed: _isExpanded ? null : _expand,
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: AnimatedCrossFade(
-                  crossFadeState: _authorExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                  crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
                   duration: Duration(milliseconds: 250),
                   firstChild: _createAuthorTile(),
-                  secondChild: _authorExpanded ? _createAuthorDetails() : SizedBox(),
+                  secondChild: _isExpanded ? _createAuthorDetails() : SizedBox(),
                 ),
               ),
             ),
