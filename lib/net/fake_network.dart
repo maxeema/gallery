@@ -61,7 +61,7 @@ class FakeApi implements Api {
     final jsonResponse = json.decode(responseBody);
     final data = jsonResponse as List;
     return Response(query,
-                    data.map((item) => Foto.from(item, item['user'], item['urls'])),
+                    data.map((item) => Foto.from(item, item['user'], item['urls'], item['links'])),
                     rateLimit: 500,
                     rateLimitRemaining: 499
     );

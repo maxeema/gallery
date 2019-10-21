@@ -99,7 +99,7 @@ class RealApi implements Api {
         throw 'Emtpy response';
 
       return Response(query,
-          data.map((item) => Foto.from(item, item['user'], item['urls'])),
+          data.map((item) => Foto.from(item, item['user'], item['urls'], item['links'])),
           rateLimit: int.tryParse(response.headers.value('x-ratelimit-limit')) ?? -1,
           rateLimitRemaining: int.tryParse(response.headers.value('x-ratelimit-remaining')) ?? -1
       );

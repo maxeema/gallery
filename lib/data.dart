@@ -6,21 +6,27 @@ import 'package:flutter/material.dart';
 class Foto {
 
   final String
-      id,
-      description,
-      color, // in format #00ff00
-      url;   // raw
+          id,
+          description,
+          color, // in format #00ff00
+          url, // raw url
+          htmlUrl,
+          downloadUrl;
 
   final Size size;
   final Author author;
 
-  Foto.from(Map<String, dynamic> img, Map<String, dynamic> user, Map<String, dynamic> urls) :
+  Foto.from(Map<String, dynamic> img, Map<String, dynamic> user,
+            Map<String, dynamic> urls, Map<String, dynamic> links) :
     id = img['id'],
     color = img['color'],
     author = Author.of(user),
     description = img['description'],
     size = Size((img['width'] as num).toDouble(), (img['height'] as num).toDouble()),
-    url = urls['raw'];
+    url = urls['raw'],
+    htmlUrl = links['html'],
+    downloadUrl = links['download']
+  ;
 
   @override
   bool operator ==(Object other) => other is Foto && other.id == id;
@@ -38,6 +44,7 @@ class Author {
 
   final String
         name,
+        username,
         bio,
         location,
         unsplashUrl,
@@ -48,6 +55,7 @@ class Author {
 
   Author.of(Map<String, dynamic> user) :
         name = user['name'],
+        username = user['username'],
         bio = user['bio'],
         location = user['location'],
         unsplashUrl = user['links']['html'],
