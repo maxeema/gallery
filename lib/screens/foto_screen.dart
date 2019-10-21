@@ -3,8 +3,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
-
-import 'data.dart';
+import 'package:unsplash_gallery/data.dart';
 
 class FotoScreen extends StatelessWidget {
 
