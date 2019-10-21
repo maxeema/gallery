@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:share/share.dart';
 import 'package:unsplash_gallery/data.dart';
+import 'package:unsplash_gallery/localization.dart';
 import 'package:unsplash_gallery/util.dart';
 
 const _avatarSize = 128;
@@ -31,19 +33,42 @@ class _DetailsScreenState extends State<DetailsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        InkResponse(
-          onTap: () => launchUrl(foto.htmlUrl),
-          onLongPress: ()=> copyToClipboard(foto.htmlUrl, ctx: context, toastMsg: 'Copied!'),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              beautifyUrl(foto.htmlUrl),
-              style: theme.textTheme.body1.apply(
-                  color: Colors.blue
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Expanded(
+              child: InkResponse(
+                onTap: () => launchUrl(foto.htmlUrl),
+                onLongPress: ()=> copyToClipboard(foto.htmlUrl, ctx: context, toastMsg: 'Copied!'),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    beautifyUrl(foto.htmlUrl),
+                    style: theme.textTheme.body1.apply(
+                        color: Colors.blue
+                    ),
+                  )
+                )
+              )
+            ),
+            InkResponse(
+              onTap: () => Share.share(foto.htmlUrl),
+              child: Tooltip(
+                message: AppLocalizations.of(context).share,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 0),
+                  child: Icon(
+                    Icons.share,
+                    color: Colors.black.withAlpha(0x77),
+                    size: 18,
+                  ),
+                )
               ),
             )
-          )
+          ],
         ),
+
         if (isNotEmpty(foto.description))
           Text(
             foto.description.trim(),
