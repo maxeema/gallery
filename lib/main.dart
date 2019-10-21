@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'conf.dart' as conf;
-import 'gallery_screen.dart';
 import 'injection.dart';
 import 'localization.dart';
 import 'net/api.dart' as net;
+import 'screens/gallery_screen.dart';
 
 ///
 /// App entry point
