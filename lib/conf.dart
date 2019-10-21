@@ -1,4 +1,6 @@
 
+import 'package:flutter/material.dart';
+
 ///
 /// Conf & Const
 ///
@@ -12,6 +14,8 @@ const apiTokens = {
   'developer api token list. at least one api key should be here',
 };
 
+const appColor = Colors.indigo;
+const appAccentColor = Colors.pinkAccent;
 const appIcon = "assets/icons/app_icon.svg";
 const appLegalese = "© Maxeem America, 2019";
 const appGitHubPage = 'https://github.com/maxeema/unpslash-gal';

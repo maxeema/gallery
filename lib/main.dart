@@ -38,7 +38,8 @@ class App extends StatelessWidget {
       supportedLocales: [ Locale('en'),],
       //
       theme: ThemeData(
-        primarySwatch: Colors.pink,
+        primarySwatch: conf.appColor,
+        accentColor: conf.appAccentColor,
       ),
     );
 
