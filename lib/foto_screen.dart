@@ -27,7 +27,7 @@ class FotoScreen extends StatelessWidget {
       scrollAxis = Axis.horizontal;
 //      print('updated size: $size');
     }
-    final fullSizedUrl = foto.prepareUrlFor(size, window);
+    final fullSizedUrl = foto.prepareUrl(size, window);
     print('$fullSizedUrl \n for $size');
     return Scaffold(
       backgroundColor: Color(int.tryParse('FF${foto.color.substring(1)}', radix: 16) ?? Colors.transparent),
