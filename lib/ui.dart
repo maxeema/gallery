@@ -42,8 +42,8 @@ toast(BuildContext ctx, String msg) {
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       timeInSecForIos: 1,
-      backgroundColor: theme.accentColor.withAlpha(0xdd),
-      textColor: theme.accentTextTheme.body1.color,
+      backgroundColor: Colors.white.withAlpha(0xdd),
+      textColor: Colors.black87,
       fontSize: theme.accentTextTheme.body1.fontSize
   );
 }
