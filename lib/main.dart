@@ -28,8 +28,8 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: GalleryScreen(),
       //
-      onGenerateTitle: (BuildContext context) =>
-        AppLocalizations.of(context).title,
+      onGenerateTitle: (BuildContext context) => AppLocalizations.of(context).title,
+      //
       localizationsDelegates: [
         AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
