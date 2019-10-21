@@ -2,6 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+const fontCaveat        = 'Caveat';
+const fontJuliusSansOne = 'JuliusSansOne';
+const fontMaterialIcons = 'MaterialIcons';
+
 snackbar(BuildContext ctx, String msg) {
   Scaffold.of(ctx)
     ..removeCurrentSnackBar()

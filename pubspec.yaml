@@ -1,5 +1,5 @@
 name: unsplash_gallery
-version: 0.0.1-dev.1
+version: 0.5.0-dev.1
 description: Maxeem gallery app uses the Unsplash for showing cool photos
 repository: https://github.com/maxeema/unsplash-gallery
 authors:
@@ -59,11 +59,13 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font.
   fonts:
-    - family: Caveat-Regular
+    - family: Caveat
       fonts:
         - asset: fonts/Caveat-Regular.ttf
-  #      - asset: fonts/Raleway-ExtraLight.ttf
-  #        weight: 200
+    - family: JuliusSansOne
+      fonts:
+        - asset: fonts/JuliusSansOne-Regular.ttf
+  #        weight: 400
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
