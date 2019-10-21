@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:unsplash_gallery/ui.dart';
 
@@ -14,6 +15,9 @@ import 'data.dart';
 import 'foto_screen.dart';
 import 'injection.dart';
 import 'net/api.dart' as net;
+import 'util.dart';
+
+const _autoLoadDataThresholdRowFromEnd = 3;
 
 class GalleryScreen extends Scaffold {
 
@@ -21,8 +25,6 @@ class GalleryScreen extends Scaffold {
   _GalleryScreenState createState() => _GalleryScreenState();
 
 }
-
-const _autoLoadDataThresholdRowFromEnd = 3;
 
 class _GalleryScreenState extends ScaffoldState with Injectable {
 
@@ -32,7 +34,7 @@ class _GalleryScreenState extends ScaffoldState with Injectable {
   net.ApiStatus status;
   net.ApiResult result;
 
-  int page = 2;
+  int page = 1;
   var data = LinkedHashSet<Foto>();
   int itemBuilderAutoLoadMoreIdx;
   var fabAnimationKey = ValueKey(true);
@@ -48,7 +50,6 @@ class _GalleryScreenState extends ScaffoldState with Injectable {
 
   BuildContext scaffoldCtx;
 
-//  BuildContext get ctx => context;
   _getFresh() async {
     print('\ncall _getFresh, refreshing: $isRefreshing');
     if (isRefreshing)
@@ -169,6 +170,130 @@ class _GalleryScreenState extends ScaffoldState with Injectable {
 
   invalidateState() => setState((){});
 
+  _details(Foto foto) {
+    final media = MediaQuery.of(context);
+    final author = foto.author;
+    final avatarSize = 128;
+    final avatarUrl = author.prepareAvatarUrl(avatarSize, window);
+    print(avatarUrl);
+    final theme = Theme.of(context);
+    showDialog(context: context, builder: (BuildContext context) {
+      return SimpleDialog(
+        contentPadding: EdgeInsets.all(0),
+        children: <Widget>[
+          Material(
+            child: InkWell(
+              onTap: () {},
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Column(
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: isNotEmpty(author.unsplashUrl) ? () => launchUrl(author.unsplashUrl) : null,
+                      child:CircleAvatar(
+                        maxRadius: avatarSize / 2,
+                        backgroundImage: NetworkImage(avatarUrl),
+                      ),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.only(top: 4),
+                      child: Text(author.name, style: theme.textTheme.title,),
+                    ),
+
+                    if (isNotEmpty(author.location))
+                      Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            style: Theme.of(context).textTheme.caption.apply(
+                              color: Colors.grey,
+                            ),
+                            children: [
+                              TextSpan(text: '',
+                                style: theme.textTheme.overline.apply(
+                                  fontFamily: 'MaterialIcons',
+                                  color: Colors.grey.shade400,
+                                )
+                              ),
+                              TextSpan(
+                                text: author.location,
+                              )
+                            ]
+                          ),
+                        )
+                      ),
+
+                    if (isNotEmpty(author.portfolioUrl) || isNotEmpty(author.unsplashUrl))
+                      InkWell(
+                        onTap: () => launchUrl(isNotEmpty(author.portfolioUrl) ? author.portfolioUrl : author.unsplashUrl),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                          child: Tooltip(child: Text(
+                            makeUrlBeautiful(isNotEmpty(author.portfolioUrl) ? author.portfolioUrl : author.unsplashUrl),
+                            style: theme.textTheme.body1.apply(
+                                color: Colors.blue
+                            ),
+                          ), message: "Url copied!"),
+                        )
+                      ),
+
+                    if (isNotEmpty(author.bio))
+                      ConstrainedBox(
+                        constraints: BoxConstraints.tightFor(width: 400),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: Text(
+                            author.bio,
+                            maxLines: 4,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.body1.apply(
+                                color: Colors.grey.shade800
+                            ),
+                          ),
+                        ),
+                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        if (isNotEmpty(author.twitterUsername))
+                          InkResponse(
+                            onLongPress: ()=> copyToClipboard(author.twitterUsername),
+                            onTap: () => launchTwitter(author.twitterUsername),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Tooltip(child: SvgPicture.asset(
+                                assetsSvgIcon('twitter'),
+                                width: 32, color: Colors.blue.shade500,
+                              ), message: "Twitter name copied!"),
+                            ),
+                          ),
+                        if (isNotEmpty(author.instagramUsername))
+                          InkResponse(
+                            onLongPress: ()=> copyToClipboard(author.instagramUsername),
+                            onTap: () => launchInstagram(author.instagramUsername),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Tooltip(child: SvgPicture.asset(
+                                assetsSvgIcon('instagram'),
+                                width: 32, color: Colors.blue.shade500,
+                              ), message: "Instagram name copied!"),
+                            ),
+                          )
+                      ]
+                    ),
+                    SizedBox(width: 8),
+                  ],
+                ),
+              )
+            )
+          )
+        ]
+      );
+    });
+  }
   _open(Foto foto, String url) {
     Navigator.push(
       context,
@@ -255,7 +380,7 @@ class _GalleryScreenState extends ScaffoldState with Injectable {
   );
 
   _createFotoTile(Foto foto, Size size) {
-    final url = foto.prepareUrlFor(size, window);
+    final url = foto.prepareUrl(size, window);
     print(url);
     return Container(
       color: Color(int.tryParse('FF${foto.color.substring(1)}', radix: 16) ?? Colors.transparent),
@@ -272,7 +397,7 @@ class _GalleryScreenState extends ScaffoldState with Injectable {
               placeholder: kTransparentImage,
             ),
           ),
-          if (foto?.author?.trim()?.isNotEmpty ?? false) Align(
+          if (isNotEmpty(foto.author.name)) Align(
             alignment: AlignmentDirectional.bottomStart,
             child: Container(
               padding: EdgeInsets.all(4),
@@ -280,7 +405,7 @@ class _GalleryScreenState extends ScaffoldState with Injectable {
                 color: Colors.black.withAlpha(0x99)
               ),
               child: Text(
-                foto.author,
+                foto.author.name,
                 style: Theme.of(context).textTheme.caption.apply(
                   color: Colors.white.withAlpha(0xbb),
                   fontFamily: 'NanumPenScript'
@@ -289,14 +414,11 @@ class _GalleryScreenState extends ScaffoldState with Injectable {
             )
           ),
           Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => _open(foto, url),
-                child: () {
-                  final description = foto.description?.trim();
-                  return description == null ? null : Tooltip(message: description);
-                }(),
-              )
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _open(foto, url),
+              onLongPress: () => _details(foto),
+            )
           ),
         ]
       )
