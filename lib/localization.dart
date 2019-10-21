@@ -29,9 +29,10 @@ class AppLocalizations {
   static Map<String, Map<String, String>> _localizedValues = {
     'en': {
       'title': 'Maxeem gallery app',
+      'drawer_title': 'Maxeem\ngallery app',
       //
       'neu':   'New',
-      'girls': 'Gals',
+      'girls': 'Girls',
       'cats':  'Cats',
       'cars':  'Cars',
       //
@@ -42,6 +43,7 @@ class AppLocalizations {
   Map<String, String> get _localized => _localizedValues[locale.languageCode];
 
   String get title => _localized['title'];
+  String get drawerTitle => _localized['drawer_title'];
   //
   String get neu   => _localized['neu'];
   String get girls => _localized['girls'];

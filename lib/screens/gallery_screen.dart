@@ -7,10 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:unsplash_gallery/categories.dart';
 import 'package:unsplash_gallery/conf.dart' as conf;
 import 'package:unsplash_gallery/data.dart';
 import 'package:unsplash_gallery/injection.dart';
+import 'package:unsplash_gallery/localization.dart';
 import 'package:unsplash_gallery/net/api.dart' as net;
+import 'package:unsplash_gallery/prefs.dart' as prefs;
+import 'package:unsplash_gallery/screens/about.dart' as about;
 import 'package:unsplash_gallery/screens/details_screen.dart';
 import 'package:unsplash_gallery/ui.dart';
 import 'package:unsplash_gallery/util.dart';
@@ -34,6 +38,8 @@ class _GalleryScreenState extends State with Injectable {
   net.ApiStatus status;
   net.ApiResult result;
 
+  Category category;
+
   int page = 1;
   var data = LinkedHashSet<Foto>();
   int itemBuilderAutoLoadMoreIdx;
@@ -47,6 +53,7 @@ class _GalleryScreenState extends State with Injectable {
   bool get isError   => status == net.ApiStatus.error;
   bool get isLoading => status == net.ApiStatus.loading;
   bool get canRefresh => data.isNotEmpty && !isRefreshing;
+  bool get isInitializing => category == null;
 
   BuildContext scaffoldCtx;
 
@@ -199,9 +206,34 @@ class _GalleryScreenState extends State with Injectable {
   @override
   initState() {
     super.initState();
-//    print('_GalleryScreenState.initState');
+    print('_GalleryScreenState.initState');
+    prefs.loadCategory().then(_onLoadConfig, onError: (error)=> _onLoadConfig(null));
+  }
+
+  _onLoadConfig(String name) {
+    print('_onLoadConfig, category: $name');
+    category = nameToCategory(name);
     api = inject();
     _getData();
+  }
+
+  _selectCategory(Category cat) async {
+    print('_selectCategory $cat');
+    _closeDrawer();
+    prefs.saveCategory(cat);
+    setState(() {
+      category = cat;
+    });
+  }
+
+  _showAbout() {
+    _closeDrawer();
+    about.showAbout(context);
+  }
+
+  _closeDrawer() {
+    if (Scaffold.of(scaffoldCtx).isDrawerOpen)
+      Navigator.pop(scaffoldCtx);
   }
 
   @override
@@ -295,7 +327,7 @@ class _GalleryScreenState extends State with Injectable {
                 foto.author.name,
                 style: Theme.of(context).textTheme.caption.apply(
                   color: Colors.white.withAlpha(0xbb),
-                  fontFamily: 'Caveat-Regular'
+                  fontFamily: fontCaveat,
                 ),
               ),
             )
@@ -356,49 +388,110 @@ class _GalleryScreenState extends State with Injectable {
     );
   }
 
-  _createShuffleFab() {
-    return FloatingActionButton(
-      onPressed: () {
-        fabAnimationKey = ValueKey(!fabAnimationKey.value);
-        shuffleData();
-      },
-      tooltip: "Shuffle all",
-      child: AnimatedSwitcher(
-        duration: Duration(milliseconds: 500),
-        transitionBuilder: (Widget child, Animation<double> animation) {
-          return RotationTransition(child: child, turns: animation,);
-        },
-        child: Icon(
-          Icons.shuffle,
-          key: fabAnimationKey,
-        ),
-      )
-    );
-  }
+  shuffleData() => setState(() { data = LinkedHashSet.of(data.toList()..shuffle(Random())); });
 
   @override
   Widget build(BuildContext context) {
 //    print('_GalleryScreenState.build, data size: ${data.length}, $status, $result');
 //    print('window: ${window.physicalSize.width/window.devicePixelRatio} x ${window.physicalSize.height/window.devicePixelRatio}');
     return Scaffold(
-      floatingActionButton: data.isNotEmpty ? _createShuffleFab() : null,
-      body: Builder(
-        builder: (BuildContext context) {
-          scaffoldCtx = context;
-          if (isLoading && data.isEmpty)
-            return _createLoadingWidget();
-          if (isError && data.isEmpty)
-            return _createErrorWidget();
-          //
-          return RefreshIndicator(
+      drawer: _createDrawer(),
+      body: _createBody(),
+      floatingActionButton: data.isNotEmpty ? _createFab() : null,
+    );
+  }
+
+  _createBody() {
+    return Builder(
+      builder: (BuildContext context) {
+        scaffoldCtx = context;
+        if (isInitializing || (isLoading && data.isEmpty))
+          return _createLoadingWidget();
+        if (isError && data.isEmpty)
+          return _createErrorWidget();
+        //
+        return RefreshIndicator(
             onRefresh: ()=> _getFresh(),
             child: _createGalleryStaggeredWidget()
-          );
-        },
+        );
+      },
+    );
+  }
+
+  _createDrawer() {
+    final localizations = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          // header
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.indigo,
+            ),
+            child: Row(
+              children: <Widget>[
+                FlutterLogo(
+                  size: 64,
+                  colors: Colors.indigo,
+                ),
+                SizedBox(width: 16,),
+                Expanded(
+                  child: Text(localizations.drawerTitle,
+                  style: TextStyle(
+                    fontFamily: fontJuliusSansOne,
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+                ),
+              ],
+            ),
+          ),
+          ...Category.values.map((cat)
+              => ListTile(title: Text(categoryToLocalizedName(cat, localizations)),
+                          selected: cat == category,
+                          leading: SizedBox(width: 64),
+                          onTap: ()=> _selectCategory(cat)) ),
+          // about
+          SizedBox(height: 8,),
+          Divider(height: 2,),
+          SizedBox(height: 8,),
+          ListTile(
+            onTap: _showAbout,
+            title: Text(
+              'About',
+              style: theme.textTheme.caption.apply(
+                color: Colors.grey.shade600,
+              ),
+            ),
+            leading: SizedBox(width: 64,),
+          ),
+          SizedBox(height: 8,),
+        ],
       ),
     );
   }
 
-  shuffleData() => setState(() { data = LinkedHashSet.of(data.toList()..shuffle(Random())); });
+  _createFab() {
+    return FloatingActionButton(
+        onPressed: () {
+          fabAnimationKey = ValueKey(!fabAnimationKey.value);
+          shuffleData();
+        },
+        tooltip: "Shuffle all",
+        child: AnimatedSwitcher(
+          duration: Duration(milliseconds: 500),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return RotationTransition(child: child, turns: animation,);
+          },
+          child: Icon(
+            Icons.shuffle,
+            key: fabAnimationKey,
+          ),
+        )
+    );
+  }
 
 }
