@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:share/share.dart';
 import 'package:unsplash_gallery/data.dart';
 import 'package:unsplash_gallery/localization.dart';
+import 'package:unsplash_gallery/ui.dart';
 import 'package:unsplash_gallery/util.dart';
 
 const _avatarSize = 128;
@@ -199,7 +200,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   children: [
                     TextSpan(text: '',
                         style: theme.textTheme.overline.apply(
-                          fontFamily: 'MaterialIcons',
+                          fontFamily: fontMaterialIcons,
                           color: Colors.grey.shade400,
                         )
                     ),
