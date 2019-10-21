@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -10,9 +9,7 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
 
   @override
   Future<AppLocalizations> load(Locale locale) {
-    // Returning a SynchronousFuture here because an async "load" operation
-    // isn't needed to produce an instance of AppLocalizations.
-    return SynchronousFuture<AppLocalizations>(AppLocalizations(locale));
+    return Future.sync(()=> AppLocalizations(locale));
   }
 
   @override
@@ -31,7 +28,7 @@ class AppLocalizations {
 
   static Map<String, Map<String, String>> _localizedValues = {
     'en': {
-      'title': 'Unsplash Gallery Preview',
+      'title': 'Maxeem gallery app',
     },
   };
 
