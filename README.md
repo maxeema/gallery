@@ -1,8 +1,8 @@
-# Unsplash Preview Gallery app
+# Maxeem gallery app
 
-Preview gallery app for the Unsplash web-site.
+Maxeem gallery app shows beautiful, quality photos from the Unsplash website
 
-Created on Dart/Flutter for educational/portfolio purposes.
+Created with <3 on Flutter/Dart
 
 ## Screenshots
 
