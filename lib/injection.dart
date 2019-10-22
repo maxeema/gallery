@@ -17,8 +17,9 @@ final injector = _Injector();
 abstract class Injector {
 
   T inject<T>([args]);
-  registerFactory<T>(T newInstance(dynamic)); // factories get args on each inject invocation
-  registerSingle<T>(single);     // singles support args only via register invocation
+  //
+  factory<T>(T newInstance(dynamic)); // factories get args on each inject invocation
+  single<T>(single);     // singles support args only via register invocation
 
 }
 
@@ -28,12 +29,12 @@ class _Injector implements Injector {
   static final _factories = <dynamic, Function>{};
 
   @override
-  registerFactory<T>(T newInstance(dynamic)) {
+  factory<T>(T newInstance(dynamic)) {
     assert(!_factories.containsKey(T));
     _factories[T] = newInstance; // apply lazy
   }
   @override
-  registerSingle<T>(single) {
+  single<T>(single) {
     assert(!_singles.containsKey(T));
    _singles[T] = single; // apply as is
   }
