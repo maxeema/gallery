@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="maxeem.america.unsplash_gallery">
+    package="maxeem.america.gallery">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 

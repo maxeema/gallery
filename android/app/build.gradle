@@ -43,7 +43,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "maxeem.america.unsplash_gallery"
+        applicationId "maxeem.america.gallery"
         resConfigs "en"
         minSdkVersion 21
         targetSdkVersion 29

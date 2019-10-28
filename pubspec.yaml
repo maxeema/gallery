@@ -1,7 +1,7 @@
-name: unsplash_gallery
+name: maxeem_gallery
 version: 0.5.0-dev.1
-description: Maxeem gallery app uses the Unsplash for showing cool photos
-repository: https://github.com/maxeema/unsplash-gallery
+description: Maxeem gallery app shows high-quaility, beautiful photos from the Unsplash
+repository: https://github.com/maxeema/gallery
 authors:
   - Maxeem (America) Shemetov <maxeem.america@gmail.com>
 
@@ -43,7 +43,6 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/icons/app_icon.svg
     - assets/icons/twitter.svg
     - assets/icons/instagram.svg
 #    - assets/data/def_content.json

@@ -1,0 +1,430 @@
+
+import 'dart:async';
+import 'dart:math';
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:maxeem_gallery/domain/photo.dart';
+import 'package:maxeem_gallery/localizations/localization.dart';
+import 'package:maxeem_gallery/misc/categories.dart';
+import 'package:maxeem_gallery/misc/ext.dart';
+import 'package:maxeem_gallery/misc/util.dart';
+import 'package:maxeem_gallery/models/model.dart';
+import 'package:maxeem_gallery/models/photos_model.dart';
+import 'package:transparent_image/transparent_image.dart';
+
+import 'details_screen.dart';
+import 'photo_screen.dart';
+import 'ui.dart';
+
+class GalleryWidget extends StatefulWidget {
+
+  final Category category;
+
+  GalleryWidget(this.category, {Key key}) : super(key: key);
+
+  @override
+  _GalleryWidgetState createState() {
+    final model = modelByCategory(category);
+    switch (category) {
+      case Category.NEW:
+        return _GalleryWidgetPagedRefreshState(model);
+      default:
+        return _GalleryWidgetPagedState(model);
+    }
+  }
+
+}
+
+abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryWidget> with LocalizableState, StateExtensions {
+
+  _GalleryWidgetState(this.model);
+
+  M model;
+
+  ScrollController scrollController;
+
+  int itemBuilderAutoLoadMoreIdx;
+
+  bool loadByUser = false;
+
+  bool get isError        => model.status.value == ModelStatus.error;
+  bool get isLoading      => model.status.value == ModelStatus.loading;
+  bool get canLoadMore    => model.hasMore;
+
+  Set<Photo> photos;
+  FailureInfo failure;
+
+  BuildContext scaffoldCtx;
+
+  Future<void> Function() refresh;
+
+  @override
+  initState() {
+    super.initState();
+//    print('${this.hashCode}, GalleryWidgetState.initState');
+    model.init();
+    model.status.observe(observeStatus);
+    model.successEvent.observe(observeSuccess);
+    model.failureEvent.observe(observeFailureEvent);
+  }
+  @override
+  dispose() {
+//    print('${this.hashCode}, GalleryWidgetState.dispose on GalleryWidget ${widget.hashCode}');
+    model.status.unObserve(observeStatus);
+    model.successEvent.unObserve(observeSuccess);
+    model.failureEvent.unObserve(observeFailureEvent);
+    model.dispose();
+    scrollController?.dispose();
+    super.dispose();
+  }
+//  @override
+//  didUpdateWidget(GalleryWidget oldWidget) {
+//    print('${this.hashCode}, GalleryWidgetState.didUpdateWidget on GalleryWidget ${widget.hashCode}');
+//    super.didUpdateWidget(oldWidget);
+//  }
+
+  setStateSafe(action()) {
+    try { // possible place for an error when call setState() during build()
+      action();
+      setState((){});
+    } catch (e) { }
+  }
+
+  invalidateState() => setState((){});
+
+  observeStatus(ModelStatus status) {
+//    print('statusObserve, $status');
+    setStateSafe((){
+      if (status == ModelStatus.success)
+        failure = null;
+    });
+  }
+
+  observeSuccess(SuccessInfo info) {
+//    print('observeSuccess, ${info.photos.length}');
+    setStateSafe(() {
+      photos = info.photos;
+      loadByUser = false;
+      scrollOnSuccess(info.action);
+    });
+  }
+
+  bool observeFailureEvent(FailureInfo failure) {
+//    print('observeFailureEvent, loadByUser: $loadByUser, error: ${failure.locKey} ${failure.notLocalized ?? ''}');
+    if (model.isEmpty) {
+      setStateSafe(() {
+        this.failure = failure;
+      });
+      return true;
+    }
+    if (failure.action == ModelAction.list && loadByUser) {
+      actionSnackbar(scaffoldCtx, failure.toLocalizedMessage(l), l.retry, () {
+        loadByUser = true;
+        model.listPhotos();
+      });
+      return true;
+    }
+    return false;
+  }
+
+  _details(Photo photo) {
+    showDialog(context: context, builder: (BuildContext context) {
+      return SimpleDialog(
+          contentPadding: EdgeInsets.all(0),
+          children: <Widget>[
+            DetailsScreen(photo),
+          ]
+      );
+    });
+  }
+
+  _open(Photo photo, String url) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PhotoScreen(photo: photo, url: url),
+      ),
+    );
+  }
+
+  scrollOnSuccess(ModelAction action) {
+    if (action == ModelAction.list) {
+      scrollPage();
+    } else if (action == ModelAction.refresh) {
+      scrollToBegin();
+    }
+  }
+
+  scrollToBegin() => animateScrollTo(0);
+
+  scrollPage() {
+    final media = MediaQuery.of(context);
+    if (isAlmostAtTheEndOfTheScroll(media))
+      animateScrollTo(scrollController.offset + media.size.height*.75);
+  }
+
+  animateScrollTo(double offset) {
+    scrollController?.animateTo(offset, duration: ms(500), curve: Curves.easeInOut);
+  }
+
+  bool isAlmostAtTheEndOfTheScroll(media) => scrollController != null
+      && (scrollController.position.maxScrollExtent - scrollController.position.pixels) <= media.size.height / 3;
+
+  onScroll() {
+//    print("scrollController, isAlmostAtTheEndOfTheScroll: ${isAlmostAtTheEndOfTheScroll(MediaQuery.of(context))},"
+//        " scroll off: ${scrollController.offset}, scroll pos ext: ${scrollController.position.maxScrollExtent}");
+    if (scrollController.position.pixels == scrollController.position.maxScrollExtent)
+      _onScrollToTheEnd();
+  }
+
+  _onScrollToTheEnd() {
+    if (canLoadMore)
+      model.listPhotos();
+    loadByUser = true;
+  }
+
+  _createLoadingWidget() => Center(child: CircularProgressIndicator());
+
+  _createErrorWidget() =>
+    Container(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(top:16),
+              child: Text(
+                failure.toLocalizedMessage(l),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.body1,
+              )
+          ),
+          Padding(
+            padding: EdgeInsets.only(top:16),
+            child: OutlineButton(
+              onPressed: model.listPhotos,
+              borderSide: BorderSide(
+                color: Colors.indigo,
+              ),
+              child: Text(
+                l.refresh,
+                style: TextStyle(
+                  color: Colors.indigo
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+      alignment: AlignmentDirectional.center,
+      padding: EdgeInsets.all(16),
+    );
+
+  _createPhotoTile(Photo photo, Size size) {
+    final url = preparePhotoUrl(photo.url, size, window);
+//    print(url);
+    return Container(
+      color: Color(int.tryParse('FF${photo.color.substring(1)}', radix: 16) ?? Colors.transparent),
+      width: size.width,
+      height: size.height,
+      child: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Hero(
+            tag: photo.id,
+            child: FadeInImage.memoryNetwork(
+              image: url,
+              fit: BoxFit.cover,
+              placeholder: kTransparentImage,
+            ),
+          ),
+          if (isNotEmpty(photo.author.name)) Align(
+              alignment: AlignmentDirectional.bottomStart,
+              child: Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(0x99)
+                ),
+                child: Text(
+                  photo.author.name,
+                  style: Theme.of(context).textTheme.caption.apply(
+                    color: Colors.white.withAlpha(0xbb),
+                    fontFamily: fontCaveat,
+                  ),
+                ),
+              )
+          ),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _open(photo, url),
+              onLongPress: () => _details(photo),
+            )
+          ),
+        ]
+      )
+    );
+  }
+
+  _createGalleryStaggeredWidget() {
+    final media = MediaQuery.of(context);
+    final columns = max(2, media.size.width ~/ 200);
+    final spacing = 4.0;
+    final loadMoreIdx = photos.length - (media.orientation == Orientation.landscape ? 2 : 3)*columns;
+    return StaggeredGridView.countBuilder(
+      controller: scrollController ??= ScrollController()..addListener(onScroll),
+      padding: EdgeInsets.all(spacing),
+      itemCount: photos.length + (canLoadMore ? 1 : 0),
+      crossAxisCount: columns,
+      mainAxisSpacing: spacing,
+      crossAxisSpacing: spacing,
+      itemBuilder: (context, index) {
+        if (index == loadMoreIdx && canLoadMore && loadMoreIdx != itemBuilderAutoLoadMoreIdx) {
+          itemBuilderAutoLoadMoreIdx = loadMoreIdx;
+//          print('item builder: auto load more data on idx: $index of ${data.length},'
+//              ' columns: $columns, rows: ${data.length / columns}');
+          model.listPhotos();
+        }
+        if (index == photos.length && canLoadMore) {
+          return SizedBox(
+            width: double.infinity,
+            height: media.size.height / 4,
+            child: Align(
+              alignment: Alignment.center,
+              child: isLoading
+              ? CircularProgressIndicator()
+              : InkResponse(
+                  radius: 70,
+                  onTap: () {
+                    loadByUser = true;
+                    model.listPhotos();
+                  },
+                  child: OutlineButton(
+                    child: Text(
+                      l.getMore,
+                      textAlign: TextAlign.center,
+                    ), onPressed: null,
+                  )
+              ),
+            ),
+          );
+        }
+        final photo = photos.elementAt(index);
+        final width = (media.size.width - spacing*(columns+1)) / columns;
+        final size = Size(width, photo.size.height / (photo.size.width / width));
+        return _createPhotoTile(photo, size);
+      },
+      staggeredTileBuilder: (index) => new StaggeredTile.fit(1),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: _createBody(),
+    );
+  }
+
+  _createBody() {
+    return Builder(
+      builder: (BuildContext context) {
+        scaffoldCtx = context;
+        if (isLoading && model.isEmpty)
+          return _createLoadingWidget();
+        if (isError && model.isEmpty)
+          return _createErrorWidget();
+        //
+        if (refresh != null) {
+          return RefreshIndicator(
+              onRefresh: refresh,
+              child: _createGalleryStaggeredWidget()
+          );
+        } else {
+          return _createGalleryStaggeredWidget();
+        }
+      },
+    );
+  }
+
+}
+
+class _GalleryWidgetPagedState<M extends PagedPhotosModel> extends _GalleryWidgetState<M> {
+
+  bool showNoMoreEvent = false;
+
+  _GalleryWidgetPagedState(M model) : super(model);
+
+  @override
+  void initState() {
+    super.initState();
+    model.noMoreEvent.observe(observeNoMoreEvent);
+  }
+
+  @override
+  void dispose() {
+    model.noMoreEvent.unObserve(observeNoMoreEvent);
+    super.dispose();
+  }
+
+  observeNoMoreEvent(bool value) {
+    if (value ?? false) {
+      showNoMoreEvent = true;
+      model.consumeNoMoreEvent();
+    }
+  }
+
+  @override
+  _onScrollToTheEnd() {
+    if (showNoMoreEvent) {
+      showNoMoreEvent = false;
+      scrollController.removeListener(onScroll);
+      snackbar(scaffoldCtx, l.theEnd);
+    } else {
+      super._onScrollToTheEnd();
+    }
+  }
+}
+
+class _GalleryWidgetPagedRefreshState<M extends NewPhotosModel> extends _GalleryWidgetPagedState<M> {
+
+  _GalleryWidgetPagedRefreshState(M model) : super(model) {
+    refresh = model.refreshPhotos;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    model.noFreshEvent.observe(observeNoFreshEvent);
+  }
+
+  @override
+  dispose() {
+    model.noFreshEvent.unObserve(observeNoFreshEvent);
+    super.dispose();
+  }
+
+  observeNoFreshEvent(bool value) {
+    if (value ?? false) {
+      snackbar(scaffoldCtx, l.latest);
+      model.consumeNoMoreEvent();
+    }
+  }
+
+  @override
+  observeFailureEvent(FailureInfo failure) {
+    if (super.observeFailureEvent(failure))
+      return true;
+    if (failure.action == ModelAction.refresh) {
+      actionSnackbar(scaffoldCtx, failure.toLocalizedMessage(l), l.retry, () {
+        loadByUser = true;
+        refresh();
+      });
+    }
+    return true;
+  }
+
+}

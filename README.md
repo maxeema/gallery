@@ -1,20 +1,19 @@
-# Maxeem gallery app
+# Maxeem gallery
 
-Maxeem gallery app shows beautiful, quality photos from the Unsplash website
+Maxeem gallery app shows beautiful, high-quality photos from the Unsplash website
 
 Created with <3 on Flutter/Dart
 
 ## Screenshots
 
-![Screenshot1](screenshots/unsplash-gallery_screnshot-1.png)
+![Screenshot1](screenshots/maxeem-gallery_screenshot-1.png)
 
-![Screenshot4](screenshots/unsplash-gallery_screnshot-4.png)
+![Screenshot2](screenshots/maxeem-gallery_screenshot-2.png)
 
-![Screenshot3](screenshots/unsplash-gallery_screnshot-3.png)
+![Screenshot3](screenshots/maxeem-gallery_screenshot-3.png)
 
-![Screenshot2](screenshots/unsplash-gallery_screnshot-2.png)
+![Screenshot4](screenshots/maxeem-gallery_screenshot-4.png)
 
+![Screenshot5](screenshots/maxeem-gallery_screenshot-5.png)
 
-
-
-
+© Maxeem America, 2019
