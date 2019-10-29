@@ -30,8 +30,8 @@ class Failure {
   bool get isRemote => error is RemoteError;
   bool get isLang   => error is Exception || error is Error;
 
-  ApiError    get asApi     => error as ApiError;
-  RemoteError get asRemote  => error as RemoteError;
+  ApiError    get asApi    => error;
+  RemoteError get asRemote => error;
 
   @override
   String toString() => 'failure';
