@@ -10,10 +10,10 @@ enum Category {
 
 categoryToName(Category category) {
   switch(category) {
-    case Category.NEW:   return 'new';
-    case Category.RANDOM:  return 'random';
-    case Category.GIRLS: return 'girls';
-    case Category.CARS:  return 'cars';
+    case Category.NEW:    return 'new';
+    case Category.RANDOM: return 'random';
+    case Category.GIRLS:  return 'girls';
+    case Category.CARS:   return 'cars';
   }
 }
 
@@ -39,8 +39,8 @@ categoryToLocalizedName(Category category, AppLocalizations localizations) {
 categoryToSearch(Category category) {
   switch(category) {
     case Category.RANDOM: return null;
-    case Category.GIRLS: return 'woman women';
-    case Category.CARS:  return 'cars auto';
+    case Category.GIRLS:  return 'woman women';
+    case Category.CARS:   return 'cars auto';
     default:
       throw ArgumentError();
   }
