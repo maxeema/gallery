@@ -26,9 +26,13 @@ PhotosModel modelByCategory(Category category) {
   switch (category) {
     case Category.NEW:
       return _create<NewPhotosModel>(category);
-    default:
+    case Category.RANDOM:
       return _create<RandomPhotosModel>(category);
+    case Category.GIRLS:
+    case Category.CARS:
+      return _create<RandomQueryPhotosModel>(category);
   }
+  throw ArgumentError();
 }
 
 // caching / mapping Models
@@ -36,11 +40,11 @@ PhotosModel modelByCategory(Category category) {
 final _cache = <dynamic, Model>{ };
 
 final _map = <Type, Function> {
-  NewPhotosModel:    (category) => NewPhotosModel(category),
-  RandomPhotosModel: (category) => RandomPhotosModel(category),
+  NewPhotosModel:             (_) => NewPhotosModel(),
+  RandomPhotosModel:          (_) => RandomPhotosModel(),
+  RandomQueryPhotosModel:     (category) => RandomQueryPhotosModel(category),
 };
 
-T _create<T extends Model>(key) => _cache.putIfAbsent(key, ()=> _map[T](key));
+T _create<T extends Model>([key]) => _cache.putIfAbsent(key, ()=> _map[T](key));
 
 _forget(key) => _cache.remove(key);
-

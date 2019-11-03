@@ -18,7 +18,7 @@ class RandomQuery implements Query {
   final int count;
   final String query;
 
-  RandomQuery(this.count, {this.query});
+  RandomQuery(this.count, [this.query]);
 }
 
 class SearchPhotoQuery extends PagedQuery {

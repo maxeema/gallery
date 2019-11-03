@@ -12,6 +12,7 @@ import 'model.dart';
 part 'new_photos_model.dart';
 part 'paged_photos_model.dart';
 part 'random_photos_model.dart';
+part 'random_query_photos_model.dart';
 
 abstract class PhotosModel extends Model with Injectable {
 

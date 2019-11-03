@@ -5,7 +5,7 @@ class NewPhotosModel extends PagedPhotosModel {
 
   final ModelData<bool> noFreshEvent = MutableModelData();
 
-  NewPhotosModel([dynamic]) : super(Category.NEW);
+  NewPhotosModel() : super(Category.NEW);
 
   consumeNoFreshEvent() => noFreshEvent.asMutable.value = null;
 

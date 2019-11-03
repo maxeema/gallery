@@ -31,7 +31,7 @@ class PhotosRepositoryImpl extends PhotosRepository with Injectable {
 
   @override
   getRandom({int count = conf.apiPhotosPerPage, String query}) =>
-      _process(() => _net.getRandom(net.RandomQuery(count, query: query)));
+      _process(() => _net.getRandom(net.RandomQuery(count, query)));
 
   Future<Result>
   _process(PhotosTransaction transaction) async {
