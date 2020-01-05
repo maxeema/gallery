@@ -45,7 +45,7 @@ android {
     defaultConfig {
         applicationId "maxeem.america.gallery"
         resConfigs "en"
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
