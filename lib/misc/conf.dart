@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 const apiBaseUrl = 'api.unsplash.com';
 const apiPhotosPerPage = 30; // now 30 is api restricted max photos per page
 const apiTokens = {
-  'dev api token(s) should be here'
+  '201bce8c9c3ea17aa7cb4884c062835f7c8c23406ad89b4e1d34ff2c1aef988c'
 };
 
 const appColor = Colors.indigo;
 const appAccentColor = Colors.pinkAccent;
-const appLegalese = "© Maxeem America, 2019";
+const appLegalese = "© Maxeem America, 2020";
 const appGitHubPage = 'https://github.com/maxeema/gallery';
 
 // Tunings
