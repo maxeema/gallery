@@ -9,15 +9,15 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:maxeem_gallery/domain/photo.dart';
 import 'package:maxeem_gallery/localizations/localization.dart';
 import 'package:maxeem_gallery/misc/categories.dart';
-import 'package:maxeem_gallery/misc/ext.dart';
 import 'package:maxeem_gallery/misc/util.dart';
+import 'package:maxeem_gallery/misc/ext.dart';
 import 'package:maxeem_gallery/models/model.dart';
 import 'package:maxeem_gallery/models/photos_model.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-import 'details_screen.dart';
-import 'photo_screen.dart';
-import 'ui.dart';
+import '../details_screen.dart';
+import '../photo_screen.dart';
+import '../ui.dart';
 
 class GalleryWidget extends StatefulWidget {
 
@@ -38,7 +38,7 @@ class GalleryWidget extends StatefulWidget {
 
 }
 
-abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryWidget> with LocalizableState, StateExtensions {
+abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryWidget> with LocalizableState {
 
   _GalleryWidgetState(this.model);
 
@@ -167,7 +167,7 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
   }
 
   animateScrollTo(double offset) {
-    scrollController?.animateTo(offset, duration: ms(500), curve: Curves.easeInOut);
+    scrollController?.animateTo(offset, duration: 500.ms, curve: Curves.easeInOut);
   }
 
   bool isAlmostAtTheEndOfTheScroll(media) => scrollController != null
@@ -224,7 +224,7 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
     );
 
   _createPhotoTile(Photo photo, Size size) {
-    final url = preparePhotoUrl(photo.url, size, window);
+    final url = preparePhotoUrl(window, size, photo.url);
 //    print(url);
     return Container(
       color: Color(int.tryParse('FF${photo.color.substring(1)}', radix: 16) ?? Colors.transparent),

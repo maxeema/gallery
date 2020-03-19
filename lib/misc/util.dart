@@ -5,13 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 
-import '../ui/ui.dart';
+import 'package:maxeem_gallery/ui/ui.dart';
 
 ///
 /// App common utils
 ///
-
-final emptySet = [];
 
 bool isEmpty(String s)    => s?.trim()?.isEmpty    ?? true;
 bool isNotEmpty(String s) => s?.trim()?.isNotEmpty ?? false;
@@ -34,7 +32,7 @@ copyToClipboard(String text, {BuildContext ctx, String toastMsg}) {
     toast(ctx, toastMsg);
 }
 
-String prepareAvatarUrl(String url, int size, Window window) {
+String prepareAvatarUrl(Window window, int size, String url, ) {
   final uri = Uri.parse(url);
   final params = Map.of(uri.queryParameters);
   params['w'] = '$size';
@@ -43,14 +41,4 @@ String prepareAvatarUrl(String url, int size, Window window) {
   return Uri.https(uri.host, uri.path, params).toString();
 }
 
-String preparePhotoUrl(String url, Size size, Window window) => '$url&w=${size.width}&dpr=${window.devicePixelRatio}';
-
-String beautifyUrl(String url) {
-  final uri = Uri.parse(url);
-  url = uri.hasScheme ? uri.toString().substring(uri.scheme.length + 3) : uri.toString();
-  if (url.startsWith('www.'))
-    url = url.substring(4);
-  if (url.endsWith('/'))
-    url = url.substring(0, url.length-1);
-  return url;
-}
+String preparePhotoUrl(Window window, Size size, String url) => '$url&w=${size.width}&dpr=${window.devicePixelRatio}';

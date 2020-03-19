@@ -24,7 +24,7 @@ class DetailsScreen extends StatefulWidget {
 
 }
 
-class _DetailsScreenState<T extends DetailsScreen> extends State<T> with LocalizableState<T>, StateExtensions {
+class _DetailsScreenState<T extends DetailsScreen> extends State<T> with LocalizableState<T> {
 
   Photo get photo => widget.photo;
 
@@ -47,7 +47,7 @@ class _DetailsScreenState<T extends DetailsScreen> extends State<T> with Localiz
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
-                    beautifyUrl(photo.htmlUrl),
+                    photo.htmlUrl.leaveMandatoryUrl(),
                     style: theme.textTheme.body1.apply(
                         color: Colors.blue
                     ),
@@ -88,7 +88,7 @@ class _DetailsScreenState<T extends DetailsScreen> extends State<T> with Localiz
   }
   _createAvatar({large = false}) {
     final author = widget.photo.author;
-    final avatarUrl = prepareAvatarUrl(author.avatarUrl, _avatarSize, window);
+    final avatarUrl = prepareAvatarUrl(window, _avatarSize, author.avatarUrl);
     return InkResponse(
       onTap:       isNotEmpty(author.unsplashUrl) ? () => launchUrl(author.unsplashUrl) : null,
       onLongPress: isNotEmpty(author.unsplashUrl) ? () =>
@@ -222,7 +222,7 @@ class _DetailsScreenState<T extends DetailsScreen> extends State<T> with Localiz
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                   child: Text(
-                    beautifyUrl(url),
+                    url.leaveMandatoryUrl(),
                     maxLines: _isExpanded ? 2 : 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.body1.apply(
@@ -257,7 +257,7 @@ class _DetailsScreenState<T extends DetailsScreen> extends State<T> with Localiz
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(ms(3000), _expand);
+    Future.delayed(3000.ms, _expand);
     return ConstrainedBox(
       constraints: BoxConstraints.tightFor(width: _maxWidth.toDouble()),
       child: InkWell(
@@ -276,7 +276,7 @@ class _DetailsScreenState<T extends DetailsScreen> extends State<T> with Localiz
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: AnimatedCrossFade(
                   crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-                  duration: ms(250),
+                  duration: 250.ms,
                   firstChild: _createAuthorTile(),
                   secondChild: _isExpanded ? _createAuthorDetails() : SizedBox(),
                 ),
