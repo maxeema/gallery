@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:maxeem_gallery/misc/ext.dart';
 import 'package:maxeem_gallery/misc/util.dart';
 
+// $ flutter test test/ext_tests.dart
 void main() {
   group("on int", () {
     test('millis', () {
