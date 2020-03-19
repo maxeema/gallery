@@ -16,4 +16,4 @@ Created with <3 on Flutter/Dart
 
 ![Screenshot5](screenshots/maxeem-gallery_screenshot-5.png)
 
-© Maxeem America, 2019
+© Maxeem America, 2020
