@@ -30,7 +30,15 @@ class PhotoScreen extends StatelessWidget {
     final fullSizedUrl = preparePhotoUrl(window, size, photo.url);
 //    print('$fullSizedUrl \n for $size');
     return Scaffold(
+      key: Key("photo_scaffold"),
       backgroundColor: Color(int.tryParse('FF${photo.color.substring(1)}', radix: 16) ?? Colors.transparent),
+      floatingActionButton: Opacity(
+        opacity: 0,
+        child: InkWell(
+          key: Key("back_btn"),
+          onTap: () => Navigator.pop(context),
+        )
+      ),
       body: Hero(
         tag: photo.id,
         child: SingleChildScrollView(

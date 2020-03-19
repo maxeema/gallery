@@ -223,7 +223,7 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
       padding: EdgeInsets.all(16),
     );
 
-  _createPhotoTile(Photo photo, Size size) {
+  _createPhotoTile(Photo photo, int index, Size size) {
     final url = preparePhotoUrl(window, size, photo.url);
 //    print(url);
     return Container(
@@ -260,6 +260,7 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
           Material(
             color: Colors.transparent,
             child: InkWell(
+              key: Key("photo$index"),
               onTap: () => _open(photo, url),
               onLongPress: () => _details(photo),
             )
@@ -275,6 +276,7 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
     final spacing = 4.0;
     final loadMoreIdx = photos.length - (media.orientation == Orientation.landscape ? 2 : 3)*columns;
     return StaggeredGridView.countBuilder(
+      key: Key("gallery_grid"),
       controller: scrollController ??= ScrollController()..addListener(onScroll),
       padding: EdgeInsets.all(spacing),
       itemCount: photos.length + (canLoadMore ? 1 : 0),
@@ -315,7 +317,7 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
         final photo = photos.elementAt(index);
         final width = (media.size.width - spacing*(columns+1)) / columns;
         final size = Size(width, photo.size.height / (photo.size.width / width));
-        return _createPhotoTile(photo, size);
+        return _createPhotoTile(photo, index, size);
       },
       staggeredTileBuilder: (index) => new StaggeredTile.fit(1),
     );

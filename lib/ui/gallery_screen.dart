@@ -61,14 +61,27 @@ class _GalleryScreenState extends State<GalleryScreen> with LocalizableState {
 
   _createBody() {
     return Scaffold(
+      key: Key("gallery_scaffold"),
       backgroundColor: Theme.of(context).backgroundColor,
       drawer: Drawer(
+        key: Key("gallery_drawer"),
         child: DrawerContentWidget(category, _selectCategory, _showAbout)
       ),
       body: Builder(
         builder: (BuildContext ctx) {
           _scaffoldCtx = ctx;
           return GalleryWidget(category, key: ValueKey(category));
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        key: Key("gallery_menu_btn"),
+        child: Icon(Icons.dehaze),
+        onPressed: () {
+          final s = Scaffold.of(_scaffoldCtx);
+          if (!s.isDrawerOpen)
+            Scaffold.of(_scaffoldCtx).openDrawer();
+          else _closeDrawer();
         },
       ),
     );

@@ -62,7 +62,8 @@ class DrawerContentWidget extends StatelessWidget {
             ],
           ),
         ),
-        ...Category.values.map((cat) => ListTile(
+        ...Category.values.map((Category cat) => ListTile(
+            key: Key("category-${categoryToName(cat)}"),
             title: Text(
               categoryToLocalizedName(cat, l),
               style: TextStyle(
@@ -80,6 +81,7 @@ class DrawerContentWidget extends StatelessWidget {
         Divider(height: 2,),
         SizedBox(height: 8,),
         ListTile(
+          key: Key("about"),
           onTap: ()=> _onShowAbout?.call(),
           title: Text(
             l.about,
