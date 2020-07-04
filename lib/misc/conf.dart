@@ -13,7 +13,7 @@ const apiTokens = {
 
 const appColor = Colors.indigo;
 const appAccentColor = Colors.pinkAccent;
-const appLegalese = "© Maxeem America, 2020";
+const appLegalese = "© Maxeem Shemetov, 2020";
 const appGitHubPage = 'https://github.com/maxeema/gallery';
 
 // Tunings
