@@ -24,7 +24,7 @@ void main() {
     });
     test('social links by user name', () {
       expect(twitterUrlByUser("maxeem"), "https://twitter.com/maxeem");
-      expect(instragramUrlByUser("maxeem"), "https://www.instagram.com/maxeem");
+      expect(instagramUrlByUser("maxeem"), "https://www.instagram.com/maxeem");
     });
   });
 }
