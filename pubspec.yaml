@@ -3,7 +3,7 @@ version: 0.5.0
 description: Maxeem gallery app shows high-quaility, beautiful photos from the Unsplash
 repository: https://github.com/maxeema/gallery
 authors:
-  - Maxeem (America) Shemetov <maxeem.america@gmail.com>
+  - Maxeem Shemetov <jmax.posh@gmail.com>
 
 environment:
   sdk: ">=2.8.0"
