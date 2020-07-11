@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:maxeem_gallery/domain/photo.dart';
 import 'package:maxeem_gallery/localizations/localization.dart';
 import 'package:maxeem_gallery/misc/ext.dart';
@@ -152,9 +152,8 @@ class _DetailsScreenState<T extends DetailsScreen> extends State<T> with Localiz
                   onLongPress: ()=> copyToClipboard(author.twitterUsername, ctx: context, toastMsg: l.twitterCopied),
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 4),
-                    child: SvgPicture.asset(
-                      assetsSvgIcon('twitter'),
-                      width: 32, color: Colors.blue.shade500,
+                    child: FaIcon(FontAwesomeIcons.twitter,
+                      size: 32, color: Colors.blue.shade500,
                     ),
                   ),
                 ),
@@ -167,9 +166,8 @@ class _DetailsScreenState<T extends DetailsScreen> extends State<T> with Localiz
                   onLongPress: ()=> copyToClipboard(author.instagramUsername, ctx: context, toastMsg: l.instagramCopied),
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 4),
-                    child: SvgPicture.asset(
-                      assetsSvgIcon('instagram'),
-                      width: 32, color: Colors.blue.shade500,
+                    child: FaIcon(FontAwesomeIcons.instagram,
+                      size: 32, color: Colors.blue.shade500,
                     ),
                   ),
                 ),
