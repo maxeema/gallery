@@ -16,7 +16,6 @@ void main() {
   testAvatarUrls(win);
   //
   testStringEmptiness();
-  testAssetsSvgIconPath();
 }
 
 testPhotoUrls(Window win) {
@@ -59,14 +58,5 @@ testStringEmptiness() {
     expect(util.isNotEmpty(""), false);
     expect(util.isNotEmpty("  "), false);
     expect(util.isNotEmpty(null), false);
-  });
-}
-
-testAssetsSvgIconPath() {
-  test("get Assets icon svg path", () {
-    expect(util.assetsSvgIcon("twitter"), "assets/icons/twitter.svg");
-    expect(util.assetsSvgIcon("Twitter"), "assets/icons/twitter.svg");
-    expect(util.assetsSvgIcon("TWITTER"), "assets/icons/twitter.svg");
-    expect(util.assetsSvgIcon("Super TWITTER"), "assets/icons/super_twitter.svg");
   });
 }

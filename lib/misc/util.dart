@@ -3,9 +3,8 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart' as launcher;
-
 import 'package:maxeem_gallery/ui/ui.dart';
+import 'package:url_launcher/url_launcher.dart' as launcher;
 
 ///
 /// App common utils
@@ -14,17 +13,15 @@ import 'package:maxeem_gallery/ui/ui.dart';
 bool isEmpty(String s)    => s?.trim()?.isEmpty    ?? true;
 bool isNotEmpty(String s) => s?.trim()?.isNotEmpty ?? false;
 
-assetsSvgIcon(String name) => "assets/icons/${name.replaceAll(' ', '_').toLowerCase()}.svg";
-
 twitterUrlByUser(String user) => 'https://twitter.com/$user';
-instragramUrlByUser(String user) => 'https://www.instagram.com/$user';
+instagramUrlByUser(String user) => 'https://www.instagram.com/$user';
 
 launchUrl(String url) {
   print(url);
   launcher.launch(url);
 }
 launchTwitter(String user)   => launchUrl(twitterUrlByUser(user));
-launchInstagram(String user) => launchUrl(instragramUrlByUser(user));
+launchInstagram(String user) => launchUrl(instagramUrlByUser(user));
 
 copyToClipboard(String text, {BuildContext ctx, String toastMsg}) {
   Clipboard.setData(ClipboardData(text: text));
