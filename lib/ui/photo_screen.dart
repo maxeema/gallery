@@ -32,16 +32,21 @@ class PhotoScreen extends StatelessWidget {
     return Scaffold(
       key: Key("photo_scaffold"),
       backgroundColor: Color(int.tryParse('FF${photo.color.substring(1)}', radix: 16) ?? Colors.transparent),
+      //used for UI tests
       floatingActionButton: Opacity(
         opacity: 0,
-        child: InkWell(
-          key: Key("back_btn"),
-          onTap: () => Navigator.pop(context),
+        child: SizedBox(
+          width: 5, height: 5,
+          child: InkWell(
+            key: Key("back_btn"),
+            onTap: () => Navigator.pop(context),
+          ),
         )
       ),
       body: Hero(
         tag: photo.id,
         child: SingleChildScrollView(
+          key: Key("photo_scroll"),
           scrollDirection: scrollAxis,
           controller: ScrollController(
             initialScrollOffset: scrollAxis == Axis.vertical ? (size.height-media.size.height) / 2 : (size.width-media.size.width) / 2,
