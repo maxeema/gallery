@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:maxeem_gallery/localizations/localization.dart';
 import 'package:maxeem_gallery/misc/util.dart';
 
+import 'package:http/http.dart' as http;
+
 part 'objects.dart';
 part 'processors.dart';
 part 'queries.dart';

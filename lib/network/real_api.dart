@@ -1,9 +1,8 @@
+part of maxeem_gallery.net;
 
 ///
 /// Real Network
 ///
-
-part of maxeem_gallery.net;
 
 class NetworkImpl implements Network {
 
@@ -12,12 +11,10 @@ class NetworkImpl implements Network {
 
   NetworkImpl(this._apiBaseUrl, this._apiTokens);
 
-  HttpClient _httpClient;
-
   @override
-  dispose() => _httpClient?.close();
+  dispose() { }
   
-  _acquireHttpClient() => _httpClient = HttpClient();
+  _acquireHttpClient() async { }
 
   @override
   Future<NetworkResult>
@@ -36,8 +33,8 @@ class NetworkImpl implements Network {
   _process(PhotosProcessor processor, Set<String> tokens) async {
     final uri = Uri.https(_apiBaseUrl,
                           processor.path,
-                          processor.queryParams..['client_id']=tokens.first);
-//    print('\n\n[real network] get photos, uri: $uri');
+                          processor.queryParams..['client_id'] = tokens.first);
+    print('\n\n[real network] get photos, uri: $uri');
     NetworkResult result;
     try {
       _acquireHttpClient();
@@ -66,24 +63,21 @@ class NetworkImpl implements Network {
 
   Future<PhotosProcessedResult>
   _processImpl(Uri uri, PhotosProcessor processor) async {
-    final request = await _httpClient.getUrl(uri);
-//    print('\nrequest: $request'
-//          '\nheaders: ${request.headers}');
 
-    final response = await request.close();
+    final response = await http.get(uri.toString());
 
-//    print('\nresponse statusCode: ${response.statusCode}'
-//          '\nheaders: ${response.headers}');
+    print('\nresponse statusCode: ${response.statusCode}'
+          '\nheaders: ${response.headers}');
 
-    if (response.headers.value('x-ratelimit-remaining') == '0')
+    if (response.headers['x-ratelimit-remaining'] == '0')
       throw ApiError(LocKeys.rateLimit);
 
-    final body = await response.transform(utf8.decoder).join();
+    final body = response.body;
 
     if (body?.trim()?.isEmpty ?? true)
       throw ApiError(LocKeys.unreachable);
 
-    return processor.process(body, response.statusCode, (name)=> response.headers.value(name));
+    return processor.process(body, response.statusCode, (name)=> response.headers[name]);
   }
 
 }
