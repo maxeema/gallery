@@ -64,7 +64,6 @@ void main() {
     //
     final randomPhoto = "photo${Random().nextInt(10)}";
     final photoFinder = find.byValueKey(randomPhoto);
-    final photoScroll = find.byValueKey("photo_scroll");
     test('open image fullscreen', () async {
       await driver.waitFor(photoFinder);
       await driver.scrollUntilVisible(gridFinder, photoFinder);
@@ -72,14 +71,6 @@ void main() {
       await driver.tap(photoFinder);
       await driver.waitFor(find.byValueKey("photo_scaffold"));
       await Future.delayed(3.sec);
-      await driver.scroll(photoScroll, 0, 2000, Duration(milliseconds: 300));
-      await Future.delayed(1.sec);
-      await driver.scroll(photoScroll, 2000, 0, Duration(milliseconds: 300));
-      await Future.delayed(1.sec);
-      await driver.scroll(photoScroll, -2000, 0, Duration(milliseconds: 300));
-      await Future.delayed(1.sec);
-      await driver.scroll(photoScroll, 0, -2000, Duration(milliseconds: 300));
-      await Future.delayed(1.sec);
       await driver.tap(find.byValueKey("back_btn"));
       await driver.waitFor(photoFinder);
       await Future.delayed(3.sec);
