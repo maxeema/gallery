@@ -4,6 +4,10 @@ Maxeem gallery app shows beautiful, high-quality photos from the Unsplash websit
 
 Created with <3 on Flutter/Dart
 
+See on Android https://play.google.com/store/apps/details?id=maxeem.america.gallery
+
+See at Web https://maxeema.github.io/gallery/
+
 ## Screenshots
 
 ![Screenshot1](screenshots/maxeem-gallery_screenshot-1.png)
