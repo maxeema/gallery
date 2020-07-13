@@ -53,18 +53,17 @@ showAbout(BuildContext context) async {
               ),
           )
       ),
-      if (!kIsWeb && platform == TargetPlatform.android)
-        Container(
-            margin: EdgeInsets.symmetric(vertical: 8),
-            alignment: Alignment.center,
-            child: OutlineButton(
-              textTheme: ButtonTextTheme.primary,
-              child: Text(localizations.seeOnPlay),
-              onPressed: () {
-                launchUrl('https://play.google.com/store/apps/details?id=${packageInfo.packageName}');
-              },
-            )
-        ),
+      Container(
+          margin: EdgeInsets.symmetric(vertical: 8),
+          alignment: Alignment.center,
+          child: OutlineButton(
+            textTheme: ButtonTextTheme.primary,
+            child: Text(localizations.seeOnPlay),
+            onPressed: () {
+              launchUrl('https://play.google.com/store/apps/details?id=${packageInfo.packageName}');
+            },
+          )
+      ),
       RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
