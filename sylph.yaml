@@ -9,30 +9,30 @@
 tmp_dir: /tmp/sylph
 artifacts_dir: /tmp/sylph_artifacts
 # local timeout per device farm run
-sylph_timeout: 720 # seconds approx
+sylph_timeout: 300 # seconds approx
 # run on ios and android pools concurrently (for faster results)
 concurrent_runs: true
 
 # device farm config
 project_name: test concurrent runs
-default_job_timeout: 10 # minutes, set at project creation
+default_job_timeout: 5 # minutes, set at project creation
 
 device_pools:
 
-  - pool_name: android pool 1
+  - pool_name: android-pool
     pool_type: android
     devices:
-      - name: Google Pixel 3a
-        model: G020G
+      - name: Google Pixel 3 XL
+        model: Pixel 3 XL
         os: 10
 
 test_suites:
 
-  - test_suite: tests 1
+  - test_suite: tests1
     main: test_driver/app.dart
     tests:
       - test_driver/app_test.dart
     pool_names:
-      - android pool 1
-    job_timeout: 15 # minutes, set per job, over-rides default job timeout above
+      - android-pool
+    job_timeout: 5 # minutes, set per job, over-rides default job timeout above
 
