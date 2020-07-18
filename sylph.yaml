@@ -14,7 +14,7 @@ sylph_timeout: 300 # seconds approx
 concurrent_runs: true
 
 # device farm config
-project_name: test concurrent runs
+project_name: Gallery tests
 default_job_timeout: 5 # minutes, set at project creation
 
 device_pools:
