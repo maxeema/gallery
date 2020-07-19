@@ -22,9 +22,9 @@ device_pools:
   - pool_name: android-pool
     pool_type: android
     devices:
-      - name: Google Pixel 3 XL
-        model: Pixel 3 XL
-        os: 10
+      - name: Samsung Galaxy S10+
+        model: SM-G975U1
+        os: 9
 
 test_suites:
 
