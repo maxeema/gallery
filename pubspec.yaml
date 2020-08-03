@@ -6,7 +6,7 @@ authors:
   - Maxeem Shemetov <jmax.posh@gmail.com>
 
 environment:
-  sdk: ">=2.8.0"
+  sdk: ">=2.7.0"
 
 dependencies:
   flutter:
