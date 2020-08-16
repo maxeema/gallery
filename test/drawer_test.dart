@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maxeem_gallery/localizations/localization.dart';
 import 'package:maxeem_gallery/misc/categories.dart';
+import 'package:maxeem_gallery/state.dart';
 import 'package:maxeem_gallery/ui/widgets/drawer_content_widget.dart';
 
 final categoryEvents = StreamController<Category>();
@@ -13,10 +14,14 @@ final aboutEvent = StreamController<String>();
 
 // $ flutter test test/drawer_test.dart
 void main() {
+  final state = AppState();
+  state.category.addListener(() {
+    categoryEvents.add(state.category.value);
+  });
+  state.category.value = Category.GIRLS;
   app() => MaterialApp(
     home: Scaffold(
-      drawer: Drawer(child: DrawerContentWidget(Category.GIRLS,
-          categoryEvents.add, ()=> aboutEvent..add("well done")..close()
+      drawer: Drawer(child: DrawerContentWidget(onSelectAbout: () => aboutEvent..add("well done")..close()
       ))
     ),
     localizationsDelegates: [
@@ -33,7 +38,7 @@ void main() {
     final ScaffoldState scaffold = tester.firstState(find.byType(Scaffold));
     final l = AppLocalizations.of(scaffold.context);
     //ensure we don't have anything on closed Drawer
-    final newFinder = find.text(categoryToLocalizedName(Category.NEW, l));
+    final newFinder = find.text(Category.NEW.toLocalizedName(l));
     expect(newFinder, findsNothing);
     //let's open Drawer
     scaffold.openDrawer();
@@ -41,9 +46,9 @@ void main() {
     await tester.pumpAndSettle();
     //
     for (var cat in Category.values) {
-      final finder = find.text(categoryToLocalizedName(cat, l));
+      final finder = find.text(cat.toLocalizedName(l));
       expect(finder, findsOneWidget);
-      await tester.tap(find.text(categoryToLocalizedName(cat, l)));
+      await tester.tap(find.text(cat.toLocalizedName(l)));
     }
     categoryEvents.close();
     assert(await categoryEvents.stream.length == Category.values.length);
