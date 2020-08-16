@@ -1,12 +1,12 @@
-# Maxeem gallery
+# Maxeem Gallery
 
-Maxeem gallery app shows beautiful, high-quality photos from the Unsplash website
+Maxeem Gallery shows beautiful, high-quality photos from the Unsplash website
 
 Created with <3 on Flutter/Dart
 
 See on Play https://play.google.com/store/apps/details?id=maxeem.america.gallery
 
-See on Web https://maxeema.github.io/gallery/
+See on Web https://maxeema.github.io/gallery
 
 ## Screenshots
 
@@ -20,4 +20,4 @@ See on Web https://maxeema.github.io/gallery/
 
 ![Screenshot5](screenshots/maxeem-gallery_screenshot-5.png)
 
-© Maxeem America, 2020
+© Max(eem) Shemetov, 2020
