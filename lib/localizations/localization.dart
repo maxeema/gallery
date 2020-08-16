@@ -15,14 +15,16 @@ class AppLocalizations {
 
   static Map<String, Map<String, String>> _localizedValues = {
     'en': {
-      'app_title':      'Maxeem gallery app',
-      'drawer_title':   'gallery app',
+      'app_title':      'Maxeem Gallery',
+      'drawer_title':   'Gallery',
       //
       'neu':      'New',
       'random':   'Random',
+      'travel':   'Travel',
       'girls':    'Girls',
-      'cats':     'Cats',
+      'fitness':  'Fitness',
       'cars':     'Cars',
+      'islands':  'Islands',
       'about':    'About',
       //
       'share':    'Share',
@@ -62,9 +64,11 @@ class AppLocalizations {
   //
   String get neu      => _localized['neu'];
   String get random   => _localized['random'];
+  String get travel     => _localized['travel'];
   String get girls    => _localized['girls'];
-  String get cats     => _localized['cats'];
+  String get fitness     => _localized['fitness'];
   String get cars     => _localized['cars'];
+  String get islands     => _localized['islands'];
   String get about    => _localized['about'];
   //
   String get share    => _localized['share'];

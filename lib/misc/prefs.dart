@@ -11,4 +11,4 @@ Future<String> loadCategory () async
     => (await prefs).getString(_keyCategory);
 
 Future<void> saveCategory(Category category) async
-    => (await prefs).setString(_keyCategory, categoryToName(category));
+    => (await prefs).setString(_keyCategory, category.name);

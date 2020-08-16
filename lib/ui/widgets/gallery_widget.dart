@@ -335,7 +335,7 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
     return Builder(
       builder: (BuildContext context) {
         scaffoldCtx = context;
-        if (isLoading && model.isEmpty)
+        if ((isLoading && model.isEmpty) || photos == null)
           return _createLoadingWidget();
         if (isError && model.isEmpty)
           return _createErrorWidget();

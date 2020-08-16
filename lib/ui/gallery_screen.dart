@@ -2,11 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:maxeem_gallery/localizations/localization.dart';
 import 'package:maxeem_gallery/misc/categories.dart';
-import 'package:maxeem_gallery/misc/prefs.dart' as prefs;
+import 'package:maxeem_gallery/misc/injection.dart';
+import 'package:maxeem_gallery/state.dart';
 import 'package:maxeem_gallery/ui/about_dialog.dart' as about;
 
 import 'widgets/drawer_content_widget.dart';
 import 'widgets/gallery_widget.dart';
+
+const _landModeThreshold = 800.0;
+const _categoriesWidthInLand = 260.0;
 
 class GalleryScreen extends StatefulWidget {
 
@@ -15,72 +19,71 @@ class GalleryScreen extends StatefulWidget {
 
 }
 
-class _GalleryScreenState extends State<GalleryScreen> with LocalizableState {
+class _GalleryScreenState extends State<GalleryScreen> with LocalizableState, Injectable {
 
-  Category category;
+  AppState get appState => inject();
 
-  bool get isInitializing => category == null;
+  LabeledGlobalKey<ScaffoldState> scaffoldKey;
+  ScaffoldState get scaffoldState => scaffoldKey?.currentState;
 
-  @override
-  void initState() {
+  @override initState() {
     super.initState();
-    prefs.loadCategory().then(_onLoadConfig, onError: (error)=> _onLoadConfig(null));
+    appState.category.addListener(_closeDrawer);
   }
-
-  _onLoadConfig(String name) {
-    setState(() {
-      this.category = name == null ? Category.NEW : nameToCategory(name);
-    });
-  }
-
-  _selectCategory(Category cat) async {
-    _closeDrawer();
-
-    prefs.saveCategory(cat);
-
-    if (cat != category) {
-      setState(() {
-        category = cat;
-      });
-    }
-  }
-
-  _showAbout() {
-    _closeDrawer();
-    about.showAbout(_scaffoldCtx);
+  @override dispose() {
+    appState.category.removeListener(_closeDrawer);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isInitializing)
-      return Container(color: Theme.of(context).backgroundColor);
-    return _createBody();
-  }
-
-  BuildContext _scaffoldCtx;
-
-  _createBody() {
+    final isLandWithCategories =
+        MediaQuery.of(context).size.width > _landModeThreshold;
     return Scaffold(
-      key: Key("gallery_scaffold"),
+      key: scaffoldKey ??= LabeledGlobalKey<ScaffoldState>("gallery_scaffold"),
+      extendBodyBehindAppBar: true,
       backgroundColor: Theme.of(context).backgroundColor,
-      drawer: Drawer(
+      drawer: isLandWithCategories ? null : Drawer(
         key: Key("gallery_drawer"),
-        child: DrawerContentWidget(category, _selectCategory, _showAbout)
+        child: DrawerContentWidget(onSelectAbout: () {
+          _closeDrawer();
+          about.showAbout(scaffoldState.context);
+        })
       ),
-      body: Builder(
-        builder: (BuildContext ctx) {
-          _scaffoldCtx = ctx;
-          return GalleryWidget(category, key: ValueKey(category));
+      body: ValueListenableBuilder<Category>(
+        valueListenable: appState.category,
+        builder: (ctx, category, child) {
+          if (category == null)
+              return Container(color: Theme.of(context).backgroundColor);
+          if (isLandWithCategories) {
+            return Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ConstrainedBox(
+                  constraints: BoxConstraints.tightFor(width: _categoriesWidthInLand),
+                  child: DrawerContentWidget(onSelectAbout: () {
+                    _closeDrawer();
+                    about.showAbout(scaffoldState.context);
+                  }),
+                ),
+                Expanded(
+                  child: GalleryWidget(category, key: ValueKey(category))
+                ),
+              ],
+            );
+          } else {
+            return GalleryWidget(category, key: ValueKey(category));
+          }
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: isLandWithCategories ? null : FloatingActionButton(
         key: Key("gallery_menu_btn"),
         child: Icon(Icons.dehaze),
         onPressed: () {
-          final s = Scaffold.of(_scaffoldCtx);
-          if (!s.isDrawerOpen)
-            Scaffold.of(_scaffoldCtx).openDrawer();
+          if (!scaffoldState.isDrawerOpen)
+            scaffoldState.openDrawer();
           else _closeDrawer();
         },
       ),
@@ -88,8 +91,8 @@ class _GalleryScreenState extends State<GalleryScreen> with LocalizableState {
   }
 
   _closeDrawer() {
-    if (Scaffold.of(_scaffoldCtx).isDrawerOpen)
-      Navigator.pop(_scaffoldCtx);
+    if (scaffoldState.isDrawerOpen)
+      Navigator.pop(scaffoldState.context);
   }
 
 }

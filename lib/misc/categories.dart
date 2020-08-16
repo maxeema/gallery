@@ -4,44 +4,46 @@ import '../localizations/localization.dart';
 enum Category {
   NEW,
   RANDOM,
+  FITNESS,
   GIRLS,
+  TRAVEL,
   CARS,
+  ISLANDS,
 }
-
-categoryToName(Category category) {
-  switch(category) {
-    case Category.NEW:    return 'new';
-    case Category.RANDOM: return 'random';
-    case Category.GIRLS:  return 'girls';
-    case Category.CARS:   return 'cars';
+const _map = {
+  Category.NEW:     'new',
+  Category.RANDOM:  'random',
+  Category.FITNESS: 'fitness',
+  Category.GIRLS:   'girls',
+  Category.TRAVEL:  'travel',
+  Category.CARS:    'cars',
+  Category.ISLANDS: 'island',
+};
+extension CategoryExt on Category {
+  String get name => _map[this];
+  ///
+  String toLocalizedName(AppLocalizations localizations) {
+    switch(this) {
+      case Category.RANDOM:  return localizations.random;
+      case Category.NEW:     return localizations.neu;
+      case Category.GIRLS:   return localizations.girls;
+      case Category.FITNESS: return localizations.fitness;
+      case Category.CARS:    return localizations.cars;
+      case Category.TRAVEL:  return localizations.travel;
+      case Category.ISLANDS: return localizations.islands;
+    }
+  }
+  String toSearch() {
+    switch(this) {
+      case Category.RANDOM: return null;
+      case Category.GIRLS:  return 'woman women';
+      case Category.FITNESS:   return 'fitness gym bodybuilding';
+      case Category.CARS:   return 'cars auto';
+      case Category.TRAVEL:   return 'travel discover journey';
+      case Category.ISLANDS:   return 'beach island bounty coast islands';
+    }
   }
 }
-
-nameToCategory(String name) {
-  switch(name) {
-    case 'new':    return Category.NEW;
-    case 'girls':  return Category.GIRLS;
-    case 'random': return Category.RANDOM;
-    case 'cars':   return Category.CARS;
-    default :      return Category.values[0];
-  }
-}
-
-categoryToLocalizedName(Category category, AppLocalizations localizations) {
-  switch(category) {
-    case Category.RANDOM: return localizations.random;
-    case Category.NEW:    return localizations.neu;
-    case Category.GIRLS:  return localizations.girls;
-    case Category.CARS:   return localizations.cars;
-  }
-}
-
-categoryToSearch(Category category) {
-  switch(category) {
-    case Category.RANDOM: return null;
-    case Category.GIRLS:  return 'woman women';
-    case Category.CARS:   return 'cars auto';
-    default:
-      throw ArgumentError();
-  }
+extension StringCategoryExt on String {
+  Category toCategory() => _map.entries.firstWhere((entry) => entry.value == this).key;
 }

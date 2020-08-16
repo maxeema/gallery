@@ -28,8 +28,7 @@ PhotosModel modelByCategory(Category category) {
       return _create<NewPhotosModel>(category);
     case Category.RANDOM:
       return _create<RandomPhotosModel>(category);
-    case Category.GIRLS:
-    case Category.CARS:
+    default:
       return _create<RandomQueryPhotosModel>(category);
   }
   throw ArgumentError();

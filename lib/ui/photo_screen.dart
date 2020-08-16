@@ -19,15 +19,6 @@ class PhotoScreen extends StatelessWidget {
     final media = MediaQuery.of(context);
     var width = media.size.width;
     var size = Size(width, photo.size.height / (photo.size.width / width));
-//    var scrollAxis = Axis.vertical;
-////    print('initial size: $size');
-//    if (size.height < media.size.height) {
-//      final height = media.size.height;
-//      width = photo.size.width / (photo.size.height / height);
-//      size = Size(width, height);
-//      scrollAxis = Axis.horizontal;
-////      print('updated size: $size');
-//    }
     final fullSizedUrl = preparePhotoUrl(window, size, photo.url);
 //    print('$fullSizedUrl \n for $size');
     final bgColor = Color(int.tryParse('FF${photo.color.substring(1)}', radix: 16) ?? Colors.transparent);
@@ -78,13 +69,6 @@ class PhotoScreen extends StatelessWidget {
               minScale: PhotoViewComputedScale.contained * 1,
               maxScale: PhotoViewComputedScale.covered * 2.5,
             ),
-//              FadeInImage.memoryNetwork(
-//                image: fullSizedUrl,
-//                placeholder: kTransparentImage,
-//                fit: BoxFit.cover,
-//                width: size.width,
-//                height: size.height,
-//              ),
           ],
         )
       ),

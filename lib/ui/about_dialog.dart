@@ -2,9 +2,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:maxeem_gallery/misc/conf.dart' as conf;
 import 'package:maxeem_gallery/localizations/localization.dart';
-import 'package:maxeem_gallery/misc/util.dart';
+import 'package:maxeem_gallery/misc/conf.dart' as conf;
+import 'package:maxeem_gallery/misc/util.dart' as util;
 import 'package:package_info/package_info.dart';
 
 showAbout(BuildContext context) async {
@@ -23,8 +23,7 @@ showAbout(BuildContext context) async {
     appVersion = packageInfo.version;
   } catch (e) {
     appName = localizations.appTitle;
-    appVersion = kIsWeb ? "Web"
-        : () {
+    appVersion = kIsWeb ? "Web" : () {
       var name = platform.toString();
       name = name.substring(platform.toString().lastIndexOf(".")+1);
       return name.substring(0, 1).toUpperCase() + name.substring(1);
@@ -41,14 +40,14 @@ showAbout(BuildContext context) async {
       RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-              style: Theme.of(context).textTheme.body1,
-              children: _spanzize(
+              style: Theme.of(context).textTheme.bodyText2,
+              children: util.spanzize(
                   localizations.appGitHub, 'GitHub',
                   (nonMatched) => TextSpan(text: nonMatched),
                   (matched) => TextSpan(
                     text: matched,
                     style: TextStyle(color: Theme.of(context).accentColor),
-                    recognizer: TapGestureRecognizer()..onTap = () => launchUrl(conf.appGitHubPage)
+                    recognizer: TapGestureRecognizer()..onTap = () => util.launchUrl(conf.appGitHubPage)
                   )
               ),
           )
@@ -60,44 +59,25 @@ showAbout(BuildContext context) async {
             textTheme: ButtonTextTheme.primary,
             child: Text(localizations.seeOnPlay),
             onPressed: () {
-              launchUrl('https://play.google.com/store/apps/details?id=${packageInfo.packageName}');
+              util.launchUrl(conf.appPlayStoreUrl.replaceAll("%package%", packageInfo.packageName));
             },
           )
       ),
       RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            style: Theme.of(context).textTheme.body1,
-            children: _spanzize(
+            style: Theme.of(context).textTheme.bodyText2,
+            children: util.spanzize(
                 localizations.appCredits, 'Unsplash',
                     (nonMatched) => TextSpan(text: nonMatched),
                     (matched) => TextSpan(
                     text: matched,
                     style: TextStyle(color: Theme.of(context).accentColor),
-                    recognizer: TapGestureRecognizer()..onTap = () => launchUrl('https://unsplash.com')
+                    recognizer: TapGestureRecognizer()..onTap = () => util.launchUrl('https://unsplash.com')
                 )
             ),
           )
       ),
     ]
   );
-}
-
-List<TextSpan>
-_spanzize(String text, String pattern,
-                      TextSpan nonMatchBuild(nonMatched),
-                      TextSpan matchBuild(matched)) {
-
-  final idx = text.indexOf(pattern);
-  final String before = idx > 0 ? text.substring(0, idx) : null;
-  final String after = idx + pattern.length < text.length  ? text.substring(idx + pattern.length) : null;
-
-  return <TextSpan>[
-    if (before?.isNotEmpty ?? false)
-      nonMatchBuild(before),
-    matchBuild(pattern),
-    if (after?.isNotEmpty ?? false)
-      nonMatchBuild(after),
-  ];
-
 }
