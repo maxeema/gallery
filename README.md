@@ -10,14 +10,10 @@ See on Web https://maxeema.github.io/gallery
 
 ## Screenshots
 
-![Screenshot1](screenshots/maxeem-gallery_screenshot-1.png)
+![Screenshot1](screens/Maxeem%20Gallery%202.png)
 
-![Screenshot2](screenshots/maxeem-gallery_screenshot-2.png)
+![Screenshot1](screens/Maxeem%20Gallery%204.png) ![Screenshot1](screens/Maxeem%20Gallery%205.png) ![Screenshot1](screens/Maxeem%20Gallery%206.png)
 
-![Screenshot3](screenshots/maxeem-gallery_screenshot-3.png)
+![Screenshot1](screens/Maxeem%20Gallery%201.png)
 
-![Screenshot4](screenshots/maxeem-gallery_screenshot-4.png)
-
-![Screenshot5](screenshots/maxeem-gallery_screenshot-5.png)
-
-© Max(eem) Shemetov, 2020
+© iMax (Maxeem) Shemetov, 2020
