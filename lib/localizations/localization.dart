@@ -4,8 +4,6 @@ part 'objects.dart';
 
 class AppLocalizations {
 
-  static const maxeem = 'Maxeem';
-
   final Locale locale;
 
   AppLocalizations(this.locale);
@@ -15,7 +13,7 @@ class AppLocalizations {
 
   static Map<String, Map<String, String>> _localizedValues = {
     'en': {
-      'app_title':      'Maxeem Gallery',
+      'app_title':      'Gallery',
       'drawer_title':   'Gallery',
       //
       'neu':      'New',

@@ -1,7 +1,7 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="app_name">Maxeem Gallery</string>
-    <string name="app_title">Maxeem Gallery</string>
+    <string name="app_name">Gallery</string>
+    <string name="app_title">Gallery</string>
 
 </resources>
