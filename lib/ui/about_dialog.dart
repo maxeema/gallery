@@ -2,9 +2,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:maxeem_gallery/localizations/localization.dart';
-import 'package:maxeem_gallery/misc/conf.dart' as conf;
-import 'package:maxeem_gallery/misc/util.dart' as util;
+import 'package:gallery/localizations/localization.dart';
+import 'package:gallery/misc/conf.dart' as conf;
+import 'package:gallery/misc/util.dart' as util;
 import 'package:package_info/package_info.dart';
 
 showAbout(BuildContext context) async {
@@ -34,7 +34,7 @@ showAbout(BuildContext context) async {
 //    applicationIcon: FlutterLogo(size: 48, style: FlutterLogoStyle.markOnly,),
     applicationIcon: SizedBox(
       width: 50, height: 50,
-      child: Image.asset("assets/Maxeem.png")
+      child: Image.asset("assets/icon.png")
     ),
     applicationName: appName,
     applicationVersion: appVersion,

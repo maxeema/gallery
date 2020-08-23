@@ -1,11 +1,11 @@
 
 import 'dart:collection';
 
-import 'package:maxeem_gallery/domain/photo.dart';
-import 'package:maxeem_gallery/misc/categories.dart';
-import 'package:maxeem_gallery/misc/conf.dart' as conf;
-import 'package:maxeem_gallery/misc/injection.dart';
-import 'package:maxeem_gallery/repository/photos_repository.dart';
+import 'package:gallery/domain/photo.dart';
+import 'package:gallery/misc/categories.dart';
+import 'package:gallery/misc/conf.dart' as conf;
+import 'package:gallery/misc/injection.dart';
+import 'package:gallery/repository/photos_repository.dart';
 
 import 'model.dart';
 

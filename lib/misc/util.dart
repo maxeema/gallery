@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:maxeem_gallery/ui/ui.dart';
+import 'package:gallery/ui/ui.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 
 ///

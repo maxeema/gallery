@@ -1,4 +1,4 @@
-part of maxeem_gallery.net;
+part of gallery.net;
 
 ///
 /// Real Network

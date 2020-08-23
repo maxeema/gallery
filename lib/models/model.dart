@@ -1,10 +1,10 @@
 import 'dart:collection';
 
-import 'package:maxeem_gallery/domain/objects.dart';
-import 'package:maxeem_gallery/domain/photo.dart';
-import 'package:maxeem_gallery/localizations/localization.dart';
-import 'package:maxeem_gallery/misc/categories.dart';
-import 'package:maxeem_gallery/misc/util.dart';
+import 'package:gallery/domain/objects.dart';
+import 'package:gallery/domain/photo.dart';
+import 'package:gallery/localizations/localization.dart';
+import 'package:gallery/misc/categories.dart';
+import 'package:gallery/misc/util.dart';
 
 import 'photos_model.dart';
 

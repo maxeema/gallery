@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maxeem_gallery/misc/util.dart' as util;
+import 'package:gallery/misc/util.dart' as util;
 import 'package:mockito/mockito.dart';
 
 class MockWindow extends Mock implements Window {}

@@ -1,9 +1,9 @@
 
 import 'dart:io';
 
-import 'package:maxeem_gallery/domain/objects.dart';
-import 'package:maxeem_gallery/localizations/localization.dart';
-import 'package:maxeem_gallery/network/api.dart' as net;
+import 'package:gallery/domain/objects.dart';
+import 'package:gallery/localizations/localization.dart';
+import 'package:gallery/network/api.dart' as net;
 
 part 'objects.dart';
 part 'repository_utils.dart';

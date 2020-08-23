@@ -1,11 +1,11 @@
 
 import 'dart:async';
 
-import 'package:maxeem_gallery/domain/domain_utils.dart';
-import 'package:maxeem_gallery/domain/objects.dart';
-import 'package:maxeem_gallery/misc/conf.dart' as conf;
-import 'package:maxeem_gallery/misc/injection.dart';
-import 'package:maxeem_gallery/network/api.dart' as net;
+import 'package:gallery/domain/domain_utils.dart';
+import 'package:gallery/domain/objects.dart';
+import 'package:gallery/misc/conf.dart' as conf;
+import 'package:gallery/misc/injection.dart';
+import 'package:gallery/network/api.dart' as net;
 
 import 'photos_repository.dart';
 

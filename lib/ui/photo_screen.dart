@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:maxeem_gallery/domain/photo.dart';
-import 'package:maxeem_gallery/misc/util.dart';
+import 'package:gallery/domain/photo.dart';
+import 'package:gallery/misc/util.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PhotoScreen extends StatelessWidget {

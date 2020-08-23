@@ -1,5 +1,5 @@
 
-part of maxeem_gallery.net;
+part of gallery.net;
 
 abstract class Query { }
 

@@ -1,10 +1,10 @@
-library maxeem_gallery.net;
+library gallery.net;
 
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:maxeem_gallery/localizations/localization.dart';
-import 'package:maxeem_gallery/misc/util.dart';
+import 'package:gallery/localizations/localization.dart';
+import 'package:gallery/misc/util.dart';
 
 import 'package:http/http.dart' as http;
 

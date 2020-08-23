@@ -6,13 +6,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:maxeem_gallery/domain/photo.dart';
-import 'package:maxeem_gallery/localizations/localization.dart';
-import 'package:maxeem_gallery/misc/categories.dart';
-import 'package:maxeem_gallery/misc/util.dart';
-import 'package:maxeem_gallery/misc/ext.dart';
-import 'package:maxeem_gallery/models/model.dart';
-import 'package:maxeem_gallery/models/photos_model.dart';
+import 'package:gallery/domain/photo.dart';
+import 'package:gallery/localizations/localization.dart';
+import 'package:gallery/misc/categories.dart';
+import 'package:gallery/misc/util.dart';
+import 'package:gallery/misc/ext.dart';
+import 'package:gallery/models/model.dart';
+import 'package:gallery/models/photos_model.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../details_screen.dart';
@@ -152,7 +152,7 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
 
   scrollOnSuccess(ModelAction action) {
     if (action == ModelAction.list) {
-      scrollPage();
+//      scrollPage();
     } else if (action == ModelAction.refresh) {
       scrollToBegin();
     }
@@ -177,10 +177,10 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
 //    print("scrollController, isAlmostAtTheEndOfTheScroll: ${isAlmostAtTheEndOfTheScroll(MediaQuery.of(context))},"
 //        " scroll off: ${scrollController.offset}, scroll pos ext: ${scrollController.position.maxScrollExtent}");
     if (scrollController.position.pixels == scrollController.position.maxScrollExtent)
-      _onScrollToTheEnd();
+      _onScrolledToTheEnd();
   }
 
-  _onScrollToTheEnd() {
+  _onScrolledToTheEnd() {
     if (canLoadMore)
       model.listPhotos();
     loadByUser = true;
@@ -380,13 +380,13 @@ class _GalleryWidgetPagedState<M extends PagedPhotosModel> extends _GalleryWidge
   }
 
   @override
-  _onScrollToTheEnd() {
+  _onScrolledToTheEnd() {
     if (showNoMoreEvent) {
       showNoMoreEvent = false;
       scrollController.removeListener(onScroll);
       snackbar(scaffoldCtx, l.theEnd);
     } else {
-      super._onScrollToTheEnd();
+      super._onScrolledToTheEnd();
     }
   }
 }

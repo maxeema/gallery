@@ -4,14 +4,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:maxeem_gallery/localizations/localization.dart';
-import 'package:maxeem_gallery/misc/categories.dart';
-import 'package:maxeem_gallery/misc/conf.dart';
-import 'package:maxeem_gallery/state.dart';
-import 'package:maxeem_gallery/ui/ui.dart';
+import 'package:gallery/localizations/localization.dart';
+import 'package:gallery/misc/categories.dart';
+import 'package:gallery/misc/conf.dart';
+import 'package:gallery/state.dart';
+import 'package:gallery/ui/ui.dart';
 
 import '../../misc/injection.dart';
-import 'package:maxeem_gallery/misc/util.dart' as util;
+import 'package:gallery/misc/util.dart' as util;
 
 class DrawerContentWidget extends StatelessWidget with Injectable {
 
@@ -44,7 +44,7 @@ class DrawerContentWidget extends StatelessWidget with Injectable {
                 Flexible(
                   flex: 4,
                   child: CircleAvatar(
-                    backgroundImage: AssetImage("assets/Maxeem.png"),
+                    backgroundImage: AssetImage("assets/icon.png"),
                     maxRadius: 40,
                   ),
                 ),
@@ -63,12 +63,12 @@ class DrawerContentWidget extends StatelessWidget with Injectable {
                           fontSize: 24,
                         ),
                         children: [
-                          TextSpan(text: AppLocalizations.maxeem,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              )
-                          ),
-                          TextSpan(text: '\n'),
+//                          TextSpan(text: AppLocalizations.maxeem,
+//                              style: TextStyle(
+//                                  fontWeight: FontWeight.bold
+//                              )
+//                          ),
+//                          TextSpan(text: '\n'),
                           TextSpan(
                             text: l.drawerTitle,
                           ),

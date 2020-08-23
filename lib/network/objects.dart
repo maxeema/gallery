@@ -1,5 +1,5 @@
 
-part of maxeem_gallery.net;
+part of gallery.net;
 
 class NetworkResult {
   final dynamic query;

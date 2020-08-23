@@ -3,7 +3,7 @@
 import 'dart:math';
 
 import 'package:flutter_driver/flutter_driver.dart';
-import 'package:maxeem_gallery/misc/ext.dart';
+import 'package:gallery/misc/ext.dart';
 import 'package:test/test.dart';
 
 void main() {

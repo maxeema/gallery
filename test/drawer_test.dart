@@ -4,10 +4,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maxeem_gallery/localizations/localization.dart';
-import 'package:maxeem_gallery/misc/categories.dart';
-import 'package:maxeem_gallery/state.dart';
-import 'package:maxeem_gallery/ui/widgets/drawer_content_widget.dart';
+import 'package:gallery/localizations/localization.dart';
+import 'package:gallery/misc/categories.dart';
+import 'package:gallery/state.dart';
+import 'package:gallery/ui/widgets/drawer_content_widget.dart';
 
 final categoryEvents = StreamController<Category>();
 final aboutEvent = StreamController<String>();

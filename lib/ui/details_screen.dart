@@ -3,11 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:maxeem_gallery/domain/photo.dart';
-import 'package:maxeem_gallery/localizations/localization.dart';
-import 'package:maxeem_gallery/misc/ext.dart';
-import 'package:maxeem_gallery/misc/util.dart';
-import 'package:maxeem_gallery/ui/ui.dart' as ui;
+import 'package:gallery/domain/photo.dart';
+import 'package:gallery/localizations/localization.dart';
+import 'package:gallery/misc/ext.dart';
+import 'package:gallery/misc/util.dart';
+import 'package:gallery/ui/ui.dart' as ui;
 import 'package:share/share.dart';
 
 const _avatarSize = 128;
