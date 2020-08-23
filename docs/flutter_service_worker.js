@@ -4,19 +4,19 @@ const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
   "manifest.json": "8420c898ca721738215f1dcd5bd5b8d8",
-"main.dart.js": "98f0663043e918c7bf207db2fb523f44",
-"assets/NOTICES": "3cf1fa9f7af8aa18f96013ccfb62fa9f",
-"assets/AssetManifest.json": "18330a5a8f83f799d3e66c576f0e7e8e",
+"main.dart.js": "1c2e3959c687fb41f5a82e65596d8195",
+"assets/NOTICES": "52c9cc16ff8b17a218d67bdf34788889",
+"assets/AssetManifest.json": "2ca2e8a68f817a9b9e5fd77dee2d57bd",
 "assets/assets/icons/instagram.svg": "21a14f396cf74b3855eb014ccea16726",
 "assets/assets/icons/twitter.svg": "b253b029d1493ffcf6950acc797ef72c",
-"assets/assets/Maxeem.png": "b8085494a6ac3a4815cb90321f4ccaeb",
+"assets/assets/icon.png": "d00dc23212a12e9b3edb34b414030ebe",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-regular-400.ttf": "2bca5ec802e40d3f4b60343e346cedde",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-solid-900.ttf": "2aa350bd2aeab88b601a593f793734c0",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-brands-400.ttf": "5a37ae808cf9f652198acde612b5328d",
-"assets/fonts/MaterialIcons-Regular.ttf": "56d3ffdef7a25659eab6a68a3fbfaf16",
+"assets/fonts/MaterialIcons-Regular.otf": "a68d2a28c526b3b070aefca4bac93d25",
 "assets/fonts/Caveat-Regular.ttf": "b20ff458bc0dc48c039c68a3dc96173c",
 "assets/fonts/JuliusSansOne-Regular.ttf": "3dcf0ae6a78a6a64ae1e3f2406cefa3b",
-"assets/FontManifest.json": "8cfbfbac374f93a439f0639502a9b103",
+"assets/FontManifest.json": "4ab34735fb07ff760d34193ff2036297",
 "icons/Icon-512.png": "b8085494a6ac3a4815cb90321f4ccaeb",
 "icons/Icon-192.png": "ae9b0314f1b484c4e2129d9c8552d820",
 "index.html": "1e17cbf7786dd4919962cf537085fb00",
@@ -38,8 +38,8 @@ const CORE = [
 self.addEventListener("install", (event) => {
   return event.waitUntil(
     caches.open(TEMP).then((cache) => {
-      // Provide a no-cache param to ensure the latest version is downloaded.
-      return cache.addAll(CORE.map((value) => new Request(value, {'cache': 'no-cache'})));
+      // Provide a 'reload' param to ensure the latest version is downloaded.
+      return cache.addAll(CORE.map((value) => new Request(value, {'cache': 'reload'})));
     })
   );
 });
@@ -122,7 +122,7 @@ self.addEventListener("fetch", (event) => {
         // Either respond with the cached resource, or perform a fetch and
         // lazily populate the cache. Ensure the resources are not cached
         // by the browser for longer than the service worker expects.
-        var modifiedRequest = new Request(event.request, {'cache': 'no-cache'});
+        var modifiedRequest = new Request(event.request, {'cache': 'reload'});
         return response || fetch(modifiedRequest).then((response) => {
           cache.put(event.request, response.clone());
           return response;
