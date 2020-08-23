@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:drawable="@color/windowBackground" />
-    <item android:gravity="center" android:drawable="@drawable/ic_splash"
-        android:width="226dp" android:height="226dp" />
+<!--    <item android:gravity="center" android:drawable="@mimmap/ic_launcher"-->
+<!--        android:width="226dp" android:height="226dp" />-->
 
 </layer-list>
