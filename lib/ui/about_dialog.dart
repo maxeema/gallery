@@ -31,7 +31,11 @@ showAbout(BuildContext context) async {
   }
 
   showAboutDialog(context: context,
-    applicationIcon: FlutterLogo(size: 48, colors: Colors.indigo,),
+//    applicationIcon: FlutterLogo(size: 48, style: FlutterLogoStyle.markOnly,),
+    applicationIcon: SizedBox(
+      width: 50, height: 50,
+      child: Image.asset("assets/Maxeem.png")
+    ),
     applicationName: appName,
     applicationVersion: appVersion,
     applicationLegalese: conf.appLegalese,
