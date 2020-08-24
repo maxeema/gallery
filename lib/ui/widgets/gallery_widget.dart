@@ -272,7 +272,15 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
 
   _createGalleryStaggeredWidget() {
     final media = MediaQuery.of(context);
-    final columns = max(2, media.size.width ~/ 200);
+    final width = media.size.width;
+    int columns;
+    if (width < 360) {
+      columns = 1;
+    } else if (width < 800) {
+      columns = max(2, width ~/ 200);
+    } else {
+      columns = max(3, width ~/ 270);
+    }
     final spacing = 4.0;
     final loadMoreIdx = photos.length - (media.orientation == Orientation.landscape ? 2 : 3)*columns;
     return StaggeredGridView.countBuilder(
