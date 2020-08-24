@@ -42,6 +42,7 @@ class _GalleryScreenState extends State<GalleryScreen> with LocalizableState, In
     return Scaffold(
       key: scaffoldKey ??= LabeledGlobalKey<ScaffoldState>("gallery_scaffold"),
       extendBodyBehindAppBar: true,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).backgroundColor,
       drawer: isLandWithCategories ? null : Drawer(
         key: Key("gallery_drawer"),

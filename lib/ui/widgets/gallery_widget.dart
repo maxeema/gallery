@@ -57,8 +57,6 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
   Set<Photo> photos;
   FailureInfo failure;
 
-  BuildContext scaffoldCtx;
-
   Future<void> Function() refresh;
 
   @override
@@ -121,7 +119,7 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
       return true;
     }
     if (failure.action == ModelAction.list && loadByUser) {
-      actionSnackbar(scaffoldCtx, failure.toLocalizedMessage(l), l.retry, () {
+      actionSnackbar(context, failure.toLocalizedMessage(l), l.retry, () {
         loadByUser = true;
         model.listPhotos();
       });
@@ -333,31 +331,19 @@ abstract class _GalleryWidgetState<M extends PhotosModel> extends State<GalleryW
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: _createBody(),
-    );
-  }
-
-  _createBody() {
-    return Builder(
-      builder: (BuildContext context) {
-        scaffoldCtx = context;
-        if ((isLoading && model.isEmpty) || photos == null)
-          return _createLoadingWidget();
-        if (isError && model.isEmpty)
-          return _createErrorWidget();
-        //
-        if (refresh != null) {
-          return RefreshIndicator(
-              onRefresh: refresh,
-              child: _createGalleryStaggeredWidget()
-          );
-        } else {
-          return _createGalleryStaggeredWidget();
-        }
-      },
-    );
+    if (isLoading && model.isEmpty)
+      return _createLoadingWidget();
+    if (isError && model.isEmpty)
+      return _createErrorWidget();
+    //
+    if (refresh != null) {
+      return RefreshIndicator(
+          onRefresh: refresh,
+          child: _createGalleryStaggeredWidget()
+      );
+    } else {
+      return _createGalleryStaggeredWidget();
+    }
   }
 
 }
@@ -392,7 +378,7 @@ class _GalleryWidgetPagedState<M extends PagedPhotosModel> extends _GalleryWidge
     if (showNoMoreEvent) {
       showNoMoreEvent = false;
       scrollController.removeListener(onScroll);
-      snackbar(scaffoldCtx, l.theEnd);
+      snackbar(context, l.theEnd);
     } else {
       super._onScrolledToTheEnd();
     }
@@ -419,7 +405,7 @@ class _GalleryWidgetPagedRefreshState<M extends NewPhotosModel> extends _Gallery
 
   observeNoFreshEvent(bool value) {
     if (value ?? false) {
-      snackbar(scaffoldCtx, l.latest);
+      snackbar(context, l.latest);
       model.consumeNoMoreEvent();
     }
   }
@@ -429,7 +415,7 @@ class _GalleryWidgetPagedRefreshState<M extends NewPhotosModel> extends _Gallery
     if (super.observeFailureEvent(failure))
       return true;
     if (failure.action == ModelAction.refresh) {
-      actionSnackbar(scaffoldCtx, failure.toLocalizedMessage(l), l.retry, () {
+      actionSnackbar(context, failure.toLocalizedMessage(l), l.retry, () {
         loadByUser = true;
         refresh();
       });
