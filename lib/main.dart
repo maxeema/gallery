@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -25,10 +26,10 @@ class App extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-//    useEffect(() {
-//      UiOverlayStyle.darkStatusBarIcons.apply();
-//      return null;
-//    }, ["onetime"]);
+    useEffect(() {
+      SystemChrome.setEnabledSystemUIOverlays([]);
+      return null;
+    }, ["onetime"]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: GalleryScreen(),
