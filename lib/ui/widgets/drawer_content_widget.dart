@@ -24,18 +24,19 @@ class DrawerContentWidget extends StatelessWidget with Injectable {
 
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context);
     return Container(
-      color: Colors.indigo.shade100,
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          // header
+      color: Colors.grey.shade100,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
           DrawerHeader(
             margin: EdgeInsets.zero,
             decoration: BoxDecoration(
-              color: Colors.indigo,
+//              color: Colors.transparent,
+              color: Colors.grey.shade300,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -45,7 +46,7 @@ class DrawerContentWidget extends StatelessWidget with Injectable {
                   flex: 4,
                   child: CircleAvatar(
                     backgroundImage: AssetImage("assets/icon.png"),
-                    maxRadius: 40,
+                    maxRadius: 44,
                   ),
                 ),
                 SizedBox(
@@ -63,26 +64,29 @@ class DrawerContentWidget extends StatelessWidget with Injectable {
                           fontSize: 24,
                         ),
                         children: [
-//                          TextSpan(text: AppLocalizations.maxeem,
-//                              style: TextStyle(
-//                                  fontWeight: FontWeight.bold
-//                              )
-//                          ),
-//                          TextSpan(text: '\n'),
                           TextSpan(
-                            text: l.drawerTitle,
+                              text: l.drawerTitle,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500
+                              )
                           ),
                           TextSpan(text: '\n'),
                           TextSpan(
-                            style: Theme.of(context).textTheme.bodyText2,
+                            style: Theme.of(context).textTheme.bodyText2.copyWith(
+                                color: Colors.black54
+                            ),
                             children: util.spanzize(
                                 "by Unsplash", 'Unsplash',
                                     (nonMatched) => TextSpan(text: nonMatched),
                                     (matched) => TextSpan(
                                     text: matched,
-                                    style: TextStyle(color: Colors.white),
+                                    style: TextStyle(
+                                        color: Colors.pinkAccent,
+                                        fontWeight: FontWeight.w500
+                                    ),
                                     recognizer: TapGestureRecognizer()..onTap
-                                        = () => util.launchUrl('https://unsplash.com')
+                                    = () => util.launchUrl('https://unsplash.com')
                                 )
                             ),
                           )
@@ -93,44 +97,57 @@ class DrawerContentWidget extends StatelessWidget with Injectable {
               ],
             ),
           ),
-          ...Category.values.map((Category cat) => Material(
-            color: Colors.white,
-            child: ListTile(
-                key: Key("category-${cat.name}"),
-                title: Text(
-                  cat.toLocalizedName(l),
-                  style: TextStyle(
-                      fontWeight: cat == category ? FontWeight.w700 : FontWeight.normal,
-                      color: cat == category ? appAccentColor : Colors.black
-                  ),
-                ),
-                selected: cat == category,
-                leading: SizedBox(width: 64),
-                onTap: () {
-                  appState.category.value = cat;
-                }
+          Divider(height: 0.5,),
+          Expanded(
+            child: Center(
+              child: ListView(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  ...Category.values.map((Category cat) => Material(
+                    color: Colors.grey.shade100,
+                    child: ListTile(
+                        key: Key("category-${cat.name}"),
+                        title: Text(
+                          cat.toLocalizedName(l),
+                          style: TextStyle(
+                              fontWeight: cat == category ? FontWeight.w700 : FontWeight.normal,
+                              color: cat == category ? appAccentColor : Colors.black
+                          ),
+                        ),
+                        selected: cat == category,
+                        leading: SizedBox(width: 64),
+                        onTap: () {
+                          appState.category.value = cat;
+                        }
+                      ),
+                  )),
+                  if (media.orientation == Orientation.landscape)
+                    about(l, theme),
+                  SizedBox(height: 8,)
+                ],
               ),
-          )
-          ),
-          // about
-          Divider(height: 1,),
-          Material(
-            color: Colors.white,
-            child: ListTile(
-              key: Key("about"),
-              onTap: ()=> onSelectAbout?.call(),
-              title: Text(
-                l.about,
-                style: theme.textTheme.caption.apply(
-                  color: Colors.grey.shade600,
-                ),
-              ),
-              leading: SizedBox(width: 64,),
             ),
           ),
-          SizedBox(height: 8,),
+          if (media.orientation == Orientation.portrait)
+            about(l, theme),
         ],
       ),
     );
   }
+
+  about(l, theme) => Material(
+    color: Colors.transparent,
+    child: ListTile(
+      key: Key("about"),
+      onTap: ()=> onSelectAbout?.call(),
+      title: Text(
+        l.about,
+        style: theme.textTheme.caption.apply(
+          color: Colors.grey.shade600,
+        ),
+      ),
+      leading: SizedBox(width: 64,),
+    ),
+  );
 }
