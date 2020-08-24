@@ -5,11 +5,11 @@ The Gallery app shows beautiful, high-quality photos from the Unsplash website.
 And used for a good mood ;)
 
 * Has been created for portfolio/educational purposes.
-* Works with Unsplash API in dev mode therefore are possible limitations.
+* Works with the Unsplash API in the dev mode therefore possible limitations.
 
-Play Store https://play.google.com/store/apps/details?id=maxeem.america.gallery
+https://play.google.com/store/apps/details?id=maxeem.america.gallery
 
-Web https://maxeema.github.io/gallery
+https://maxeema.github.io/gallery
 
 ## Screenshots
 
