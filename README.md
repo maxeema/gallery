@@ -15,8 +15,12 @@ Web https://maxeema.github.io/gallery
 
 ![Screenshot](screens/Gallery2.png)
 
-![Screenshot](screens/Gallery6.png) ![Screenshot1](screens/Gallery5.png)
- 
+![Screenshot](screens/Gallery7.png) ![Screenshot1](screens/Gallery5.png) ![Screenshot1](screens/Gallery4.png)
+
 ![Screenshot](screens/Gallery1.png)
+
+![Screenshot](screens/Gallery6.png) ![Screenshot](screens/Gallery3.png)
+
+ 
 
 © iMax (Maxeem) Shemetov, 2020
