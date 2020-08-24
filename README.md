@@ -1,12 +1,15 @@
 # Gallery
 
-Gallery shows beautiful, high-quality photos from the Unsplash website
+The Gallery app shows beautiful, high-quality photos from the Unsplash website.
 
-Created with <3 on Flutter/Dart
+And used for a good mood ;)
 
-See on Play https://play.google.com/store/apps/details?id=maxeem.america.gallery
+* Has been created for portfolio/educational purposes.
+* Works with Unsplash API in dev mode therefore are possible limitations.
 
-See on Web https://maxeema.github.io/gallery
+Play Store https://play.google.com/store/apps/details?id=maxeem.america.gallery
+
+Web https://maxeema.github.io/gallery
 
 ## Screenshots
 
