@@ -9,7 +9,7 @@ import 'package:gallery/ui/about_dialog.dart' as about;
 import 'widgets/drawer_content_widget.dart';
 import 'widgets/gallery_widget.dart';
 
-const _landModeThreshold = 800.0;
+const _landModeThreshold = 900.0;
 const _categoriesWidthInLand = 260.0;
 
 class GalleryScreen extends StatefulWidget {
