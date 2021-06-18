@@ -42,10 +42,10 @@ class AppLocalizations {
       //
       LocKeys.noNet:              "Connection problem.\nCheck Internet and retry.",
       LocKeys.notOk:              "Contact server error",
-      LocKeys.errInLog:           "An error occured.\nTechnical details in log.",
+      LocKeys.errInLog:           "An error occurred.\nTechnical details in log.",
       LocKeys.unreachable:        "Server is unreachable",
       LocKeys.noMore:             "No more data",
-      LocKeys.noData:             "No data was recieved",
+      LocKeys.noData:             "No data was received",
       LocKeys.dataUnsupported:    "Data format is not supported",
       LocKeys.unknownResponse:    "Unknown server response",
       LocKeys.remoteError:        "Server error",
