@@ -56,17 +56,18 @@ showAbout(BuildContext context) async {
               ),
           )
       ),
-      Container(
-          margin: EdgeInsets.symmetric(vertical: 8),
-          alignment: Alignment.center,
-          child: OutlineButton(
-            textTheme: ButtonTextTheme.primary,
-            child: Text(localizations.seeOnPlay),
-            onPressed: () {
-              util.launchUrl(conf.appPlayStoreUrl.replaceAll("%package%", packageInfo.packageName));
-            },
-          )
-      ),
+      if (defaultTargetPlatform == TargetPlatform.android)
+        Container(
+            margin: EdgeInsets.symmetric(vertical: 8),
+            alignment: Alignment.center,
+            child: OutlineButton(
+              textTheme: ButtonTextTheme.primary,
+              child: Text(localizations.seeOnPlay),
+              onPressed: () {
+                util.launchUrl(conf.appPlayStoreUrl.replaceAll("%package%", packageInfo.packageName));
+              },
+            )
+        ),
       RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
