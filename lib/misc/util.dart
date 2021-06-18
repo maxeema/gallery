@@ -29,7 +29,7 @@ copyToClipboard(String text, {BuildContext ctx, String toastMsg}) {
     toast(ctx, toastMsg);
 }
 
-String prepareAvatarUrl(Window window, int size, String url, ) {
+String prepareAvatarUrl(FlutterWindow window, int size, String url, ) {
   final uri = Uri.parse(url);
   final params = Map.of(uri.queryParameters);
   params['w'] = '$size';
@@ -38,7 +38,8 @@ String prepareAvatarUrl(Window window, int size, String url, ) {
   return Uri.https(uri.host, uri.path, params).toString();
 }
 
-String preparePhotoUrl(Window window, Size size, String url) => '$url&w=${size.width}&dpr=${window.devicePixelRatio}';
+String preparePhotoUrl(FlutterWindow window, Size size, String url)
+    => '$url&w=${size.width}&dpr=${window.devicePixelRatio}';
 
 List<TextSpan>
 spanzize(String text, String pattern,
