@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 
-const appLegalese     = "© iMax Shemetov, 2020";
+const appLegalese     = "© Max Shemetov, 2021";
 const appGitHubPage   = 'https://github.com/maxeema/gallery';
 const appPlayStoreUrl = 'https://play.google.com/store/apps/details?id=%package%';
 
