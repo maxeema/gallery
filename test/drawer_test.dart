@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gallery/localizations/localization.dart';
 import 'package:gallery/misc/categories.dart';
 import 'package:gallery/state.dart';
-import 'package:gallery/ui/widgets/drawer_content_widget.dart';
+import 'package:gallery/ui/widgets/categories_list_widget.dart';
 
 final categoryEvents = StreamController<Category>();
 final aboutEvent = StreamController<String>();
@@ -21,7 +21,7 @@ void main() {
   state.category.value = Category.GIRLS;
   app() => MaterialApp(
     home: Scaffold(
-      drawer: Drawer(child: DrawerContentWidget(onSelectAbout: () => aboutEvent..add("well done")..close()
+      drawer: Drawer(child: CategoriesListWidget(onSelectAbout: () => aboutEvent..add("well done")..close()
       ))
     ),
     localizationsDelegates: [

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -11,7 +10,8 @@ import 'network/api.dart' as net;
 import 'repository/photos_repository.dart';
 import 'repository/photos_repository_impl.dart';
 import 'state.dart';
-import 'ui/gallery_screen.dart';
+import 'ui/gallery_bottom_sheet_screen.dart';
+import 'ui/gallery_slided_drawer_screen.dart';
 
 main() {
   // register dependencies
@@ -23,7 +23,6 @@ main() {
 }
 
 class App extends HookWidget {
-
   @override
   Widget build(BuildContext context) {
     useEffect(() {
@@ -32,7 +31,17 @@ class App extends HookWidget {
     }, ["onetime"]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: GalleryScreen(),
+      home: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final mq = MediaQuery.of(context);
+          // print('mq size: ${mq.size}');
+          if (mq.size.height > 900 && mq.size.width > 900) {
+            // iPad
+            return GalleryBottomSheetScreen();
+          }
+          return GallerySlidedDrawerScreen();
+        },
+      ),
       //
       onGenerateTitle: (BuildContext context) => AppLocalizations.of(context).appTitle,
       //
@@ -50,5 +59,4 @@ class App extends HookWidget {
       ),
     );
   }
-
 }

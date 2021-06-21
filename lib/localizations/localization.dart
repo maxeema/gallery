@@ -13,8 +13,8 @@ class AppLocalizations {
 
   static Map<String, Map<String, String>> _localizedValues = {
     'en': {
-      'app_title':      'Gallery',
-      'drawer_title':   'Gallery',
+      'app_title':      'Maxeem Gallery',
+      'drawer_title':   'Maxeem\nGallery',
       //
       'neu':      'New',
       'random':   'Random',
