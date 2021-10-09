@@ -1,6 +1,6 @@
 # Gallery Unsplash using Flutter/Dart
 
-Gallery Unsplash - shows beautiful, high-quality photos from the Unsplash images provider.
+Gallery Unsplash client - shows beautiful, high-quality photos from the Unsplash images provider.
 
 - created with Flutter/Dart
 - for portfolio/educational purposes 
